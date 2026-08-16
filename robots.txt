@@ -1,0 +1,8 @@
+# robots.txt — I.E. 88044 (Coishco, Áncash)
+# IMPORTANTE: reemplazar "https://TU-DOMINIO-AQUI.pe" por el dominio real
+# una vez que el colegio tenga hosting/dominio definitivo (ver plan del proyecto).
+
+User-agent: *
+Allow: /
+
+Sitemap: https://TU-DOMINIO-AQUI.pe/sitemap.xml
