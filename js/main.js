@@ -28,25 +28,62 @@ try {
   console.error('[main.js] Error en menú móvil:', err);
 }
 
-// Submenús desplegables (Nuestro Colegio / Niveles / Comunidad)
+// Submenús desplegables (menú principal, con soporte para subniveles anidados)
 try {
   const dropdownItems = document.querySelectorAll('.nav-item.has-dropdown');
 
+  // Cierra cualquier otro desplegable (no ancestros ni descendientes)
+  // cuando el puntero entra a un nuevo item. Esto evita que, en
+  // escritorio, un desplegable abierto por clic se quede visible
+  // mientras el usuario pasa el cursor (hover) a otro menú distinto:
+  // así solo hay un desplegable abierto a la vez.
+  function closeOtherDropdowns(item) {
+    const ancestors = [];
+    let p = item.parentElement;
+    while (p) {
+      if (p.classList && p.classList.contains('has-dropdown')) ancestors.push(p);
+      p = p.parentElement;
+    }
+    dropdownItems.forEach(other => {
+      if (other === item || ancestors.includes(other) || item.contains(other)) return;
+      other.classList.remove('open');
+      other.querySelector(':scope > .nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   dropdownItems.forEach(item => {
-    const btn = item.querySelector('.nav-dropdown-btn');
+    const btn = item.querySelector(':scope > .nav-dropdown-btn');
     if (!btn) return;
+
+    item.addEventListener('mouseenter', () => closeOtherDropdowns(item));
+    btn.addEventListener('focus', () => closeOtherDropdowns(item));
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const isOpen = item.classList.contains('open');
-      // Cierra los demás submenús abiertos
+
+      // Ancestros del item actual (para no cerrarlos si es un submenú anidado)
+      const ancestors = [];
+      let p = item.parentElement;
+      while (p) {
+        if (p.classList && p.classList.contains('has-dropdown')) ancestors.push(p);
+        p = p.parentElement;
+      }
+
       dropdownItems.forEach(other => {
+        if (other === item || ancestors.includes(other)) return;
         other.classList.remove('open');
-        other.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+        other.querySelector(':scope > .nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
       });
-      if (!isOpen) {
-        item.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
+
+      item.classList.toggle('open', !isOpen);
+      btn.setAttribute('aria-expanded', String(!isOpen));
+
+      if (isOpen) {
+        item.querySelectorAll('.nav-item.has-dropdown.open').forEach(d => {
+          d.classList.remove('open');
+          d.querySelector(':scope > .nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+        });
       }
     });
   });
@@ -56,7 +93,7 @@ try {
     if (!e.target.closest('.nav-item.has-dropdown')) {
       dropdownItems.forEach(item => {
         item.classList.remove('open');
-        item.querySelector('.nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
+        item.querySelector(':scope > .nav-dropdown-btn')?.setAttribute('aria-expanded', 'false');
       });
     }
   });
@@ -390,6 +427,45 @@ try {
   console.error('[main.js] Error en botón Arriba del footer:', err);
 }
 
+
+// ============ INTRANET (panel de acceso) ============
+const intranetToggle = document.getElementById('intranetToggle');
+if (intranetToggle) {
+  const panel = document.createElement('div');
+  panel.className = 'intranet-panel';
+  panel.id = 'intranetPanel';
+  panel.innerHTML = `
+    <form id="intranetForm">
+      <p class="intranet-title">Acceso Intranet</p>
+      <label>Usuario
+        <input type="text" name="usuario" autocomplete="username" required>
+      </label>
+      <label>Clave
+        <input type="password" name="clave" autocomplete="current-password" required>
+      </label>
+      <button type="submit" class="btn btn-primary intranet-submit">Ingresar</button>
+      <p class="intranet-note placeholder-text">[Intranet institucional — módulo pendiente de implementación por el colegio.]</p>
+    </form>
+  `;
+  intranetToggle.insertAdjacentElement('afterend', panel);
+
+  const closeIntranet = () => {
+    panel.classList.remove('open');
+    intranetToggle.setAttribute('aria-expanded', 'false');
+  };
+  intranetToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = panel.classList.toggle('open');
+    intranetToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  panel.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', closeIntranet);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeIntranet(); });
+  panel.querySelector('#intranetForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    panel.querySelector('.intranet-note').textContent = 'Formulario de prueba: la intranet aún no está conectada a un sistema real.';
+  });
+}
 
 // ============ BUSCADOR INTERNO ============
 // Índice de páginas y secciones del sitio. Al agregar contenido real,

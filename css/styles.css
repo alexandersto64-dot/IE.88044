@@ -126,65 +126,195 @@ img{ max-width: 100%; display:block; }
 }
 .header-inner{
   display:flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 1760px;
+  padding: 14px clamp(20px, 4vw, 40px);
+}
+
+/* Fila superior: logo + título a la izquierda, accesos externos
+   (y el botón de menú móvil) a la derecha. La navegación va debajo,
+   como segunda fila (ver .site-nav). */
+.header-top{
+  display:flex;
   align-items:center;
   justify-content: space-between;
-  padding: 14px 24px;
+  flex-wrap: wrap;
+  gap: 10px 24px;
 }
-.brand{ display:flex; align-items:center; gap:12px; }
+.header-top-right{
+  display:flex;
+  align-items:center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Bloque marca: logo + nombre institucional. Se le da más aire y una
+   separación real entre el código de la I.E.P. y el nombre del colegio,
+   además de un acento vertical que ancla visualmente el conjunto y
+   aprovecha mejor el espacio a la izquierda del encabezado. */
+.brand{
+  display:flex;
+  align-items:center;
+  gap: 22px;
+  min-width: 0;
+  padding-right: 8px;
+}
 .brand-mark{
   display: block;
-  width: 44px; height: 44px;
+  width: 64px; height: 64px;
   object-fit: contain;
   flex: 0 0 auto;
 }
 .footer-brand .brand-mark{ width: 52px; height: 52px; }
-.brand-text strong{ display:block; font-family: var(--font-display); color: var(--ocean-deep); }
-.brand-text small{ display:block; color:var(--text-secondary); font-size: var(--text-xs); }
+.brand-text{
+  display:flex;
+  flex-direction: column;
+  justify-content:center;
+  gap: 4px;
+  padding-left: 22px;
+  border-left: 2px solid var(--sun);
+  line-height: 1.2;
+}
+.brand-text strong{
+  display:block;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: var(--ocean-deep);
+  white-space: nowrap;
+}
+.brand-text small{
+  display:block;
+  color: var(--teal);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: .3px;
+  white-space: nowrap;
+}
 
-.site-nav{ display:flex; align-items:center; gap: 8px; }
-.site-nav > a{ font-weight: 600; color: var(--ocean-deep); font-size: var(--text-base); padding: 8px 14px; }
-.site-nav > a:hover{ color: var(--ocean-mid); }
+.site-nav{ display:flex; align-items:center; flex-wrap: wrap; gap: 6px; }
+
+/* Botón/cuadro elegante compartido por todas las opciones principales
+   (Inicio, los desplegables y el CTA de Contacto) — azul marino, oro
+   como detalle, esquinas redondeadas y elevación suave al hover. */
+.site-nav > a{
+  position: relative;
+  font-weight: 600;
+  color: var(--ocean-deep);
+  font-size: var(--text-base);
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, transform .18s ease, box-shadow .2s ease;
+}
+.site-nav > a:hover{
+  color: var(--ocean-deep);
+  background: var(--sand);
+  border-color: var(--sun);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(16,40,78,.12);
+}
 .nav-cta{
   background: var(--ocean-deep);
   color: var(--white) !important;
-  padding: .55rem 1.2rem !important;
+  padding: .6rem 1.3rem !important;
   border-radius: 999px;
-  margin-left: 8px;
+  margin-left: 4px;
+  border: 1.5px solid var(--ocean-deep) !important;
+  box-shadow: 0 6px 16px rgba(16,40,78,.22);
+}
+.nav-cta:hover{
+  background: var(--ocean-mid);
+  border-color: var(--sun) !important;
+  color: var(--white) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(16,40,78,.28);
+}
+
+/* Accesos externos (PerúEduca, UGEL Santa, Google, Office 365) en la
+   zona derecha del header. */
+.header-partners{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+.partner-link{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.partner-link:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(16,40,78,.12);
+}
+.partner-logo{
+  display:block;
+  height: 34px;
+  width: auto;
+  max-width: 60px;
+  object-fit: contain;
 }
 
 /* Dropdown */
 .nav-item{ position: relative; }
 .nav-dropdown-btn{
-  background:none; border:none; cursor:pointer;
+  background: none;
+  cursor:pointer;
   font-family: var(--font-body);
   font-weight:600; color: var(--ocean-deep); font-size:var(--text-base);
-  padding: 8px 14px;
-  display:flex; align-items:center; gap:4px;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  display:flex; align-items:center; gap:6px;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, transform .18s ease, box-shadow .2s ease;
 }
-.nav-dropdown-btn:hover{ color: var(--ocean-mid); }
+.nav-dropdown-btn:hover{
+  color: var(--ocean-deep);
+  background: var(--sand);
+  border-color: var(--sun);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(16,40,78,.12);
+}
+.nav-item.open > .nav-dropdown-btn{
+  background: var(--sand);
+  border-color: var(--sun);
+}
 .chev{ font-size:var(--text-xs); transition: transform .18s ease; }
-.nav-item.open .chev{ transform: rotate(180deg); }
+.nav-item.open > .nav-dropdown-btn .chev{ transform: rotate(180deg); }
 
 /* El desplegable existe siempre en el DOM; se anima con opacity/transform
    en vez de display:none, para poder animarlo suavemente. */
 .dropdown{
   position:absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 12px);
   left:0;
   background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 24px 48px rgba(16,40,78,.18);
-  padding: 18px 20px;
-  min-width: 300px;
-  display:grid;
-  grid-template-columns: repeat(2, minmax(160px,1fr));
-  gap: 4px 26px;
+  border-radius: var(--radius-md);
+  border-top: 3px solid var(--sun);
+  box-shadow: 0 22px 44px rgba(16,40,78,.20);
+  padding: 8px 6px;
+  min-width: 250px;
+  display:flex;
+  flex-direction: column;
   z-index: 60;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-8px);
-  transition: opacity .22s ease, transform .22s ease, visibility .22s;
+  transform: translateY(-10px);
+  transition: opacity .24s ease, transform .24s ease, visibility .24s;
   pointer-events: none;
+}
+/* Cada opción aparece una debajo de otra, separada por una línea fina
+   (como en la referencia): se aplica al hijo directo, así funciona
+   igual para enlaces sueltos y para los que además tienen submenú. */
+.dropdown > *:not(:last-child){
+  border-bottom: 1px solid rgba(16,40,78,.10);
 }
 .dropdown.dropdown-mega{
   grid-template-columns: repeat(3, minmax(170px,1fr));
@@ -192,7 +322,7 @@ img{ max-width: 100%; display:block; }
 }
 
 /* Abre por clic/teclado (JS agrega .open — sirve para móvil y accesibilidad) */
-.nav-item.open .dropdown{
+.nav-item.open > .dropdown{
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -202,15 +332,15 @@ img{ max-width: 100%; display:block; }
 /* En escritorio (mouse real) también abre automáticamente al pasar el cursor,
    y se mantiene abierto si el foco de teclado está dentro (accesibilidad) */
 @media (hover: hover) and (pointer: fine){
-  .nav-item.has-dropdown:hover .dropdown,
-  .nav-item.has-dropdown:focus-within .dropdown{
+  .nav-item.has-dropdown:hover > .dropdown,
+  .nav-item.has-dropdown:focus-within > .dropdown{
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
   }
-  .nav-item.has-dropdown:hover .chev,
-  .nav-item.has-dropdown:focus-within .chev{
+  .nav-item.has-dropdown:hover > .nav-dropdown-btn .chev,
+  .nav-item.has-dropdown:focus-within > .nav-dropdown-btn .chev{
     transform: rotate(180deg);
   }
   /* Pequeño puente invisible entre el botón y el panel para que el hover
@@ -229,17 +359,121 @@ img{ max-width: 100%; display:block; }
   align-items:center;
   gap: 10px;
   padding: 12px 10px;
+  margin: 2px 0;
   border-radius: var(--radius-sm);
+  border-left: 3px solid transparent;
   font-weight: 600;
   font-size: var(--text-base);
   color: var(--ink);
+  transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
 }
 .dropdown a[aria-current="page"]{
   background: var(--sand);
+  border-left-color: var(--sun);
   color: var(--ocean-deep);
 }
+
+/* Submenú anidado (Niveles Educativos > Primaria/Secundaria > Docentes y Horarios) */
+.dropdown-sublink{
+  width: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 12px 10px;
+  margin: 2px 0;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid transparent;
+  font-weight: 700;
+  font-size: var(--text-base);
+  color: var(--ink);
+  background: none;
+  border-top: none; border-right: none; border-bottom: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+  transition: background .16s ease, border-color .16s ease;
+}
+.dropdown-sublink:hover, .nav-item.submenu.open > .dropdown-sublink{ background: var(--sand); border-left-color: var(--sun); }
+.dropdown-sublink .chev{ transform: rotate(-90deg); }
+.nav-item.submenu:hover > .dropdown-sublink .chev,
+.nav-item.submenu.open > .dropdown-sublink .chev{ transform: rotate(0deg); }
+/* Tercer nivel (Docentes y Horarios): único que se abre lateralmente,
+   solo para evitar que el menú crezca demasiado en vertical */
+.dropdown .dropdown{
+  top: -8px;
+  left: 100%;
+  margin-left: 8px;
+  min-width: 220px;
+  border-top: 3px solid var(--sun);
+}
 .dropdown a[aria-current="page"] .dropdown-icon{ color: var(--teal); }
-.dropdown a:hover{ background: var(--sand); color: var(--ocean-deep); }
+.dropdown a:hover{ background: var(--sand); border-left-color: var(--sun); color: var(--ocean-deep); transform: translateX(2px); }
+/* ============ DOCENTES Y HORARIOS ============ */
+.staff-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.staff-card{
+  background: var(--white);
+  border: 1px solid #e7edf1;
+  border-radius: var(--radius-md);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.staff-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 22px 42px rgba(16,40,78,.18);
+  border-color: var(--sun);
+}
+.staff-avatar{
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--sand);
+  color: var(--ocean-deep);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom: 14px;
+}
+.staff-avatar .icon{ width: 22px; height: 22px; }
+.staff-name{ font-family: var(--font-display); font-size: var(--text-lg); color: var(--ocean-deep); margin: 0 0 8px; }
+.staff-subject{
+  display:inline-block;
+  background: var(--sand);
+  color: var(--ocean-mid);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.staff-schedule{
+  display:flex;
+  align-items:flex-start;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: #55646f;
+  padding-top: 14px;
+  margin: 0;
+  border-top: 1px dashed #e2e9ee;
+}
+.staff-schedule .icon{ width:16px; height:16px; flex-shrink:0; margin-top:2px; color: var(--teal); }
+.staff-level-block + .staff-level-block{ margin-top: 40px; }
+.staff-level-title{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  font-family: var(--font-display);
+  color: var(--ocean-deep);
+  font-size: var(--text-xl);
+  margin: 0 0 4px;
+}
+@media (max-width: 640px){
+  .staff-grid{ grid-template-columns: 1fr; }
+}
+
 /* ============ PÁGINA 404 ============ */
 .error-404{
 
@@ -358,6 +592,56 @@ img{ max-width: 100%; display:block; }
 .crumb-sep{ display:flex; color: #b9c2c8; }
 .crumb-sep .icon{ width: 13px; height: 13px; }
 
+/* ============ INTRANET ============ */
+.intranet-toggle{
+  position: relative;
+  display:flex;
+  align-items:center;
+  gap: 6px;
+  background: none;
+  border: 1.5px solid var(--ocean-deep);
+  color: var(--ocean-deep);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: .85rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, transform .18s ease, box-shadow .2s ease;
+}
+.intranet-toggle .icon{ width: 15px; height: 15px; }
+.intranet-toggle:hover{
+  background: var(--sand);
+  border-color: var(--sun);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(16,40,78,.12);
+}
+.intranet-panel{
+  position: absolute;
+  top: 62px;
+  right: 24px;
+  width: 260px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 45px rgba(16,40,78,.25);
+  padding: 20px;
+  display: none;
+  z-index: 90;
+}
+.intranet-panel.open{ display:block; }
+.intranet-title{ font-family: var(--font-display); font-weight:700; color: var(--ocean-deep); margin: 0 0 12px; }
+.intranet-panel label{ display:block; font-size:.8rem; font-weight:600; color:#55646f; margin-bottom:10px; }
+.intranet-panel input{
+  display:block; width:100%; margin-top:4px;
+  padding: 8px 10px;
+  border: 1px solid #d8e2e8;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+}
+.intranet-submit{ width:100%; margin-top:4px; justify-content:center; }
+.intranet-note{ font-size:.72rem; margin: 10px 0 0; }
+
 /* ============ ÍCONOS SVG ============ */
 .icon{
   width: 1em;
@@ -410,6 +694,16 @@ img{ max-width: 100%; display:block; }
   overflow: hidden;
 }
 .hero-inner{ max-width: 760px; }
+.hero-inner.has-carousel{ max-width: 1100px; }
+
+/* Carrusel de fotos en el Hero: reutiliza el componente de carrusel
+   de la galería (mismas clases .gallery-carousel-wrap/.gallery-item),
+   solo se ajustan proporción y sombra para el contexto del Hero. */
+.hero-carousel{ box-shadow: 0 24px 60px rgba(0,0,0,.35); border-radius: var(--radius-md); }
+.hero-carousel .gallery-item{ aspect-ratio: 16/7; }
+@media (max-width: 720px){
+  .hero-carousel .gallery-item{ aspect-ratio: 4/3; }
+}
 .eyebrow{
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -774,33 +1068,50 @@ a.info-card{ display:block; }
   .quick-info-grid, .stats-grid{ grid-template-columns: repeat(2,1fr); }
   .contact-grid{ grid-template-columns: 1fr; }
 }
-@media (max-width: 720px){
+@media (max-width: 1180px){
+  .header-inner{ padding: 12px clamp(16px, 4vw, 24px); }
+  .brand{ gap: 14px; }
+  .brand-mark{ width: 52px; height: 52px; }
+  .brand-text{ padding-left: 14px; gap: 2px; }
+  .brand-text strong{ font-size: 1.12rem; white-space: normal; }
+  .brand-text small{ font-size: var(--text-xs); white-space: normal; }
   .nav-toggle{ display:flex; }
+  .header-top-right{ gap: 12px; }
+  .header-partners{ gap: 12px; }
+  .partner-logo{ height: 26px; max-width: 46px; }
   .site-nav{
     position:absolute;
     top: 100%; left:0; right:0;
+    max-width: 100vw;
     background: var(--white);
     flex-direction: column;
-    align-items:flex-start;
-    padding: 16px 24px 24px;
-    gap: 16px;
-    box-shadow: 0 12px 20px rgba(16,40,78,.08);
+    align-items:stretch;
+    padding: 14px 16px 20px;
+    gap: 8px;
+    box-shadow: 0 16px 30px rgba(16,40,78,.14);
     display:none;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
   }
   .site-nav.open{ display:flex; }
   .site-nav{ width:100%; }
+  .site-nav > a{ width:100%; box-sizing:border-box; }
   .nav-item{ width:100%; }
-  .nav-dropdown-btn{ width:100%; justify-content:space-between; }
+  .nav-dropdown-btn{ width:100%; box-sizing:border-box; justify-content:space-between; }
+  .nav-cta{ text-align:center; margin-left:0; }
   .dropdown{
     position:static;
     box-shadow:none;
-    border-radius:0;
-    padding:0 0 0 14px;
+    border-radius: var(--radius-sm);
+    border-top: none;
+    padding: 0;
     min-width:0;
     width:100%;
-    border-left: 2px solid var(--sand);
+    max-width: 100%;
+    background: var(--sand);
+    border-left: 3px solid var(--sun);
+    margin: 2px 0 0;
     display:block;
-    grid-template-columns: none;
     /* En móvil no hay :hover real; se anima como acordeón con max-height */
     max-height: 0;
     overflow: hidden;
@@ -811,15 +1122,38 @@ a.info-card{ display:block; }
     pointer-events: auto;
   }
   .nav-item.open .dropdown{
-    max-height: 600px;
+    max-height: 800px;
     opacity: 1;
-    padding: 6px 0 10px 14px;
+    padding: 8px;
   }
-  .dropdown a{ padding: 10px; }
+  .dropdown > *:not(:last-child){ border-bottom: 1px solid rgba(16,40,78,.10); }
+  .dropdown a{ padding: 11px 10px; margin:0; border-left:none; word-break: break-word; }
+  .dropdown a:hover, .dropdown a:active{ transform:none; }
+  .dropdown .dropdown{
+    position: static;
+    left: auto;
+    top: auto;
+    margin: 4px 0 4px;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    border-top: none;
+    background: var(--white);
+  }
+  .dropdown-sublink{ background: var(--white); border-left:none; }
+  .dropdown-sublink .chev{ transform: rotate(0deg); }
+  .nav-item.submenu.open > .dropdown-sublink .chev{ transform: rotate(180deg); }
   .levels-grid{ grid-template-columns: 1fr; }
   .quick-info-grid{ grid-template-columns: 1fr 1fr; }
   .hero{ padding: 72px 0 120px; }
   .gallery-grid{ grid-template-columns: 1fr; }
+}
+@media (max-width: 480px){
+  .brand-mark{ width: 44px; height: 44px; }
+  .brand-text strong{ font-size: 1rem; }
+  .header-top-right{ width: 100%; justify-content: space-between; }
+  .header-partners{ gap: 10px; }
+  .partner-logo{ height: 22px; max-width: 38px; }
 }
 
 /* Reduced motion */
@@ -1344,3 +1678,463 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   outline: 3px solid var(--sun);
   outline-offset: 2px;
 }
+/* ================================
+   RESET
+================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* ================================
+   BODY
+================================ */
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a 0%,
+            #1e3a8a 50%,
+            #2563eb 100%
+        );
+
+    color: #1e293b;
+}
+
+
+/* ================================
+   CONTENEDOR
+================================ */
+
+.login-container {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+}
+
+
+/* ================================
+   TARJETA
+================================ */
+
+.login-card {
+    width: 100%;
+    max-width: 450px;
+
+    background: rgba(255, 255, 255, 0.97);
+
+    padding: 42px;
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.30);
+
+    animation: aparecer 0.6s ease;
+}
+
+
+/* Animación */
+
+@keyframes aparecer {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* ================================
+   LOGO
+================================ */
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+
+    margin-bottom: 20px;
+}
+
+
+.logo {
+    width: 90px;
+    height: 90px;
+
+    object-fit: contain;
+
+    padding: 8px;
+
+    background: #eff6ff;
+
+    border-radius: 50%;
+
+    border: 3px solid #dbeafe;
+}
+
+
+/* ================================
+   ENCABEZADO
+================================ */
+
+.login-header {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+
+.institution {
+    display: inline-block;
+
+    color: #2563eb;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 8px;
+}
+
+
+.login-header h1 {
+    font-size: 30px;
+
+    color: #0f172a;
+
+    margin-bottom: 8px;
+}
+
+
+.login-header p {
+    color: #64748b;
+
+    font-size: 15px;
+}
+
+
+/* ================================
+   FORMULARIO
+================================ */
+
+.login-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.form-group label {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+
+/* ================================
+   INPUTS
+================================ */
+
+.input-container {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+}
+
+
+.input-container input {
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 48px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    color: #0f172a;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.25s;
+}
+
+
+.input-container input::placeholder {
+    color: #94a3b8;
+}
+
+
+.input-container input:focus {
+    background: white;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+
+/* Icono */
+
+.input-icon {
+    position: absolute;
+
+    left: 17px;
+
+    color: #64748b;
+
+    font-size: 17px;
+
+    z-index: 1;
+}
+
+
+/* Mostrar contraseña */
+
+.show-password {
+    position: absolute;
+
+    right: 12px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 17px;
+
+    padding: 7px;
+
+    opacity: 0.65;
+
+    transition: 0.2s;
+}
+
+
+.show-password:hover {
+    opacity: 1;
+}
+
+
+/* ================================
+   OPCIONES
+================================ */
+
+.form-options {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 13px;
+}
+
+
+.remember {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #64748b;
+
+    cursor: pointer;
+}
+
+
+.remember input {
+    accent-color: #2563eb;
+
+    width: 15px;
+    height: 15px;
+}
+
+
+.forgot-password {
+    color: #2563eb;
+
+    text-decoration: none;
+
+    font-weight: 600;
+}
+
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+
+/* ================================
+   BOTÓN
+================================ */
+
+.btn-login {
+    width: 100%;
+
+    height: 54px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 12px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.25);
+
+    transition: 0.25s;
+}
+
+
+.btn-login:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(37, 99, 235, 0.35);
+}
+
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+
+.arrow {
+    font-size: 20px;
+
+    transition: 0.2s;
+}
+
+
+.btn-login:hover .arrow {
+    transform: translateX(4px);
+}
+
+
+/* ================================
+   FOOTER
+================================ */
+
+.login-footer {
+    text-align: center;
+
+    margin-top: 28px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e2e8f0;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+
+.login-footer p {
+    margin-bottom: 6px;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 500px) {
+
+    .login-container {
+        padding: 15px;
+    }
+
+
+    .login-card {
+        padding: 30px 22px;
+
+        border-radius: 18px;
+    }
+
+
+    .login-header h1 {
+        font-size: 26px;
+    }
+
+
+    .form-options {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+}
+
