@@ -1,15 +1,17 @@
 /* ============================================================
    I.E. 88044 — Design tokens
-   Paleta inspirada en Coishco: distrito pesquero de la costa
-   de Áncash → azules de mar, arena cálida y sol.
+   Paleta institucional: azul eléctrico como color principal de
+   identidad y acento, blanco como base de limpieza visual, gris
+   para textos secundarios/bordes, y celeste pastel como
+   complemento para fondos suaves, hover y detalles.
    ============================================================ */
 :root{
-  --ocean-deep: #10284E;
-  --ocean-mid:  #1D4C86;
-  --teal:       #0B6E6D;
-  --sun:        #D9A431;
+  --ocean-deep: #1D4ED8;
+  --ocean-mid:  #2563EB;
+  --teal:       #64748B;
+  --sun:        #BAE6FD;
   --coral:      #E2483F;
-  --sand:       #FBF2E2;
+  --sand:       #F0F7FE;
   --ink:        #16263B;
   --text-secondary: #4A5A6A;
   --white:      #FFFFFF;
@@ -180,7 +182,7 @@ img{ max-width: 100%; display:block; }
 .brand-text strong{
   display:block;
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 2.1rem;
   font-weight: 800;
   letter-spacing: .2px;
   color: var(--ocean-deep);
@@ -195,7 +197,7 @@ img{ max-width: 100%; display:block; }
   white-space: nowrap;
 }
 
-.site-nav{ display:flex; align-items:center; flex-wrap: wrap; gap: 6px; }
+.site-nav{ display:flex; align-items:center; flex-wrap: wrap; gap: 10px; }
 
 /* Botón/cuadro elegante compartido por todas las opciones principales
    (Inicio, los desplegables y el CTA de Contacto) — azul marino, oro
@@ -217,6 +219,23 @@ img{ max-width: 100%; display:block; }
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(16,40,78,.12);
 }
+/* Ícono de "Inicio": se integra en línea con el texto, sin agrandar
+   la barra de navegación (mismo alto de línea que el resto de los
+   enlaces del menú). */
+.nav-link-inicio{
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.nav-link-icon{
+  display: block;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
 .nav-cta{
   background: var(--ocean-deep);
   color: var(--white) !important;
@@ -700,7 +719,7 @@ img{ max-width: 100%; display:block; }
    de la galería (mismas clases .gallery-carousel-wrap/.gallery-item),
    solo se ajustan proporción y sombra para el contexto del Hero. */
 .hero-carousel{ box-shadow: 0 24px 60px rgba(0,0,0,.35); border-radius: var(--radius-md); }
-.hero-carousel .gallery-item{ aspect-ratio: 16/7; }
+.hero-carousel .gallery-item{ aspect-ratio: 2.4/1; }
 @media (max-width: 720px){
   .hero-carousel .gallery-item{ aspect-ratio: 4/3; }
 }
@@ -1073,7 +1092,7 @@ a.info-card{ display:block; }
   .brand{ gap: 14px; }
   .brand-mark{ width: 52px; height: 52px; }
   .brand-text{ padding-left: 14px; gap: 2px; }
-  .brand-text strong{ font-size: 1.12rem; white-space: normal; }
+  .brand-text strong{ font-size: 1.6rem; white-space: normal; }
   .brand-text small{ font-size: var(--text-xs); white-space: normal; }
   .nav-toggle{ display:flex; }
   .header-top-right{ gap: 12px; }
@@ -1150,7 +1169,7 @@ a.info-card{ display:block; }
 }
 @media (max-width: 480px){
   .brand-mark{ width: 44px; height: 44px; }
-  .brand-text strong{ font-size: 1rem; }
+  .brand-text strong{ font-size: 1.3rem; }
   .header-top-right{ width: 100%; justify-content: space-between; }
   .header-partners{ gap: 10px; }
   .partner-logo{ height: 22px; max-width: 38px; }
@@ -1330,7 +1349,7 @@ a.info-card{ display:block; }
   flex: 0 0 100%;
   width: 100%;
   border-radius: 0;
-  transition: transform .5s ease;
+  transition: transform .7s cubic-bezier(.65,0,.35,1);
 }
 @media (prefers-reduced-motion: reduce){
   .gallery-carousel .gallery-item{ transition: none; }
@@ -1343,17 +1362,24 @@ a.info-card{ display:block; }
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: none;
-  background: rgba(16,40,78,.55);
+  border: 1.5px solid rgba(255,255,255,.4);
+  background: rgba(16,40,78,.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   color: var(--white);
   display:flex;
   align-items:center;
   justify-content:center;
   cursor: pointer;
-  transition: background .15s ease;
+  box-shadow: 0 4px 14px rgba(16,40,78,.25);
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
   z-index: 5;
 }
-.carousel-btn:hover{ background: rgba(16,40,78,.8); }
+.carousel-btn:hover{
+  background: rgba(16,40,78,.85);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 8px 20px rgba(16,40,78,.32);
+}
 .carousel-btn .icon{ width: 22px; height: 22px; }
 .carousel-prev-btn{ left: 12px; }
 .carousel-next-btn{ right: 12px; }
@@ -1368,13 +1394,15 @@ a.info-card{ display:block; }
 .carousel-dot{
   width: 10px;
   height: 10px;
-  border-radius: 50%;
+  border-radius: 999px;
   background: var(--sand);
   border: 2px solid var(--ocean-mid);
   cursor: pointer;
   padding: 0;
+  transition: width .3s ease, background .3s ease, border-color .3s ease;
 }
-.carousel-dot.active{ background: var(--ocean-deep); border-color: var(--ocean-deep); }
+.carousel-dot:hover{ border-color: var(--ocean-deep); }
+.carousel-dot.active{ width: 26px; background: var(--ocean-deep); border-color: var(--ocean-deep); }
 
 @media (max-width: 720px){
   .carousel-btn{ width: 36px; height: 36px; }
