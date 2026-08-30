@@ -1,0 +1,10 @@
+# Los archivos subidos por usuarios nunca deben ejecutarse como
+# script, sin importar la extensión que tengan.
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<FilesMatch "\.(php|phtml|php[0-9]?|phar)$">
+    Require all denied
+</FilesMatch>
+Options -ExecCGI
+AddHandler cgi-script .php .php3 .php4 .php5 .php7 .phtml .pl .py .cgi

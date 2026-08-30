@@ -9,7 +9,7 @@ session_start();
 
 if (!isset($_SESSION["id_usuario"])) {
 
-    header("Location: ../index.html");
+    header("Location: ../login.html");
     exit;
 
 }
@@ -39,15 +39,18 @@ require_once "../backend/config/database.php";
 
 $sql = "
     SELECT
-        id_usuario,
-        nombres,
-        apellidos,
-        correo,
-        rol
+        u.id_usuario,
+        u.nombres,
+        u.apellidos,
+        u.correo,
+        r.nombre AS rol
 
-    FROM usuarios
+    FROM usuarios u
 
-    WHERE id_usuario = ?
+    INNER JOIN roles r
+        ON u.id_rol = r.id_rol
+
+    WHERE u.id_usuario = ?
 ";
 
 $stmt = $conexion->prepare($sql);
@@ -69,6 +72,39 @@ if (!$usuario) {
 
 }
 
+
+// ==========================================
+// 6. ESTADÍSTICAS REALES DEL SISTEMA
+// (todas las cifras salen de consultas directas; si una tabla
+// no existiera, la consulta fallaría en vez de mostrar un dato
+// inventado)
+// ==========================================
+
+$totalUsuarios = (int) $conexion->query("SELECT COUNT(*) FROM usuarios")->fetchColumn();
+$totalProfesores = (int) $conexion->query("SELECT COUNT(*) FROM profesores")->fetchColumn();
+$totalAlumnos = (int) $conexion->query("SELECT COUNT(*) FROM alumnos")->fetchColumn();
+$totalCursos = (int) $conexion->query("SELECT COUNT(*) FROM cursos")->fetchColumn();
+$totalMatriculas = (int) $conexion->query("SELECT COUNT(*) FROM matriculas")->fetchColumn();
+$totalDocumentos = (int) $conexion->query("SELECT COUNT(*) FROM documentos")->fetchColumn();
+
+$resumenTrabajos = $conexion->query("
+    SELECT
+        SUM(estado IN ('ENVIADO', 'EN_REVISION', 'CORREGIDO')) AS pendientes,
+        SUM(estado = 'APROBADO') AS aprobados,
+        SUM(estado = 'REQUIERE_CAMBIOS') AS requieren_cambios
+    FROM envios_trabajo
+")->fetch();
+
+$ultimosTrabajos = $conexion->query("
+    SELECT e.titulo, e.estado, h.creado_en, u.nombres, u.apellidos
+    FROM envios_trabajo e
+    INNER JOIN profesores p ON p.id_profesor = e.id_profesor
+    INNER JOIN usuarios u ON u.id_usuario = p.id_usuario
+    INNER JOIN envios_trabajo_historial h ON h.id_envio = e.id_envio AND h.version = e.version_actual
+    ORDER BY h.creado_en DESC
+    LIMIT 5
+")->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -85,18 +121,21 @@ if (!$usuario) {
     >
 
     <title>
-        Administrador - IE 88044
+        Administrador - I.E.P. 88044 Abraham Valdelomar
     </title>
 
-    <link
-        rel="stylesheet"
-        href="../css/dashboard.css"
-    >
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
 
 </head>
 
 
 <body>
+
+<div class="app-shell">
+<?php $currentFile = basename(__FILE__); include __DIR__ . "/../backend/partials/sidebar.php"; ?>
+<div class="app-content">
+
 
 
 <header>
@@ -174,9 +213,74 @@ if (!$usuario) {
     </section>
 
 
+    <h2>
+        Panel de Administración Institucional
+    </h2>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value"><?= $totalUsuarios ?></span>
+            <span class="stat-label">Usuarios</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= $totalProfesores ?></span>
+            <span class="stat-label">Profesores</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= $totalAlumnos ?></span>
+            <span class="stat-label">Alumnos</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= $totalCursos ?></span>
+            <span class="stat-label">Cursos</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= $totalMatriculas ?></span>
+            <span class="stat-label">Matrículas</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= $totalDocumentos ?></span>
+            <span class="stat-label">Documentos</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= (int) ($resumenTrabajos["pendientes"] ?? 0) ?></span>
+            <span class="stat-label">Trabajos pendientes</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= (int) ($resumenTrabajos["aprobados"] ?? 0) ?></span>
+            <span class="stat-label">Trabajos aprobados</span>
+        </div>
+    </div>
+
+    <section>
+        <h3>Últimos trabajos enviados</h3>
+
+        <?php if (count($ultimosTrabajos) === 0): ?>
+            <p class="placeholder-text">Todavía no hay trabajos enviados en el sistema.</p>
+        <?php else: ?>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Profesor</th><th>Trabajo</th><th>Fecha</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($ultimosTrabajos as $t): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($t["nombres"] . " " . $t["apellidos"]) ?></td>
+                                <td><?= htmlspecialchars($t["titulo"]) ?></td>
+                                <td><?= htmlspecialchars($t["creado_en"]) ?></td>
+                                <td><span class="status-badge status-<?= strtolower($t["estado"]) ?>"><?= htmlspecialchars($t["estado"]) ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </section>
+
 
     <h2>
-        Administración del sistema
+        Administración
     </h2>
 
 
@@ -194,8 +298,27 @@ if (!$usuario) {
                 usuarios del sistema.
             </p>
 
-            <a href="#">
+            <a href="usuarios.php">
                 Gestionar usuarios
+            </a>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h3>
+                🎓 Alumnos
+            </h3>
+
+            <p>
+                Registrar alumnos y
+                gestionar sus matrículas.
+            </p>
+
+            <a href="alumnos.php">
+                Gestionar alumnos
             </a>
 
         </div>
@@ -213,7 +336,7 @@ if (!$usuario) {
                 de los profesores.
             </p>
 
-            <a href="#">
+            <a href="profesores.php">
                 Gestionar profesores
             </a>
 
@@ -232,7 +355,7 @@ if (!$usuario) {
                 institucionales.
             </p>
 
-            <a href="#">
+            <a href="documentos.php">
                 Ver documentos
             </a>
 
@@ -251,7 +374,7 @@ if (!$usuario) {
                 del sistema.
             </p>
 
-            <a href="#">
+            <a href="reportes.php">
                 Ver reportes
             </a>
 
@@ -270,7 +393,7 @@ if (!$usuario) {
                 académicos.
             </p>
 
-            <a href="#">
+            <a href="cursos.php">
                 Gestionar cursos
             </a>
 
@@ -289,7 +412,7 @@ if (!$usuario) {
                 del sistema.
             </p>
 
-            <a href="#">
+            <a href="configuracion.php">
                 Configuración
             </a>
 
@@ -300,6 +423,11 @@ if (!$usuario) {
 
 </main>
 
+
+</div><!-- /.app-content -->
+</div><!-- /.app-shell -->
+
+<script src="../js/panel.js"></script>
 
 </body>
 

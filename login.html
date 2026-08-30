@@ -5,48 +5,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Intranet 88044</title>
+    <title>Intranet · I.E.P. 88044 Abraham Valdelomar</title>
 
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body>
+<body class="login-page login-tech">
 
-    <main class="login-container">
+    <main class="login-container login-container--split">
 
-        <section class="login-card">
+        <!-- Fondo digital generado solo con CSS (líneas, puntos y resplandores
+             sutiles en tonos institucionales). No usa imágenes externas. -->
+        <div class="login-bg-digital" aria-hidden="true"></div>
 
-            <!-- Logo -->
-            <div class="logo-container">
-                <img
-                    src="img/brand/escudo.png"
-                    alt="Escudo de la institución educativa"
-                    class="logo"
-                >
-            </div>
+        <div class="login-shell">
 
-            <!-- Encabezado -->
-            <div class="login-header">
-                <span class="institution">IE 88044</span>
+            <!-- Costado de identidad institucional -->
+            <aside class="login-brand-panel">
 
-                <h1>Bienvenido</h1>
+                <div class="logo-container">
+                    <img
+                        src="img/brand/INICIO.png"
+                        alt="Escudo de la institución educativa"
+                        class="logo"
+                    >
+                </div>
 
-                <p>
-                    Intranet de Gestión Documental
-                </p>
-            </div>
+                <div class="login-brand">
+                    <span class="login-brand-title">ABRAHAM VALDELOMAR</span>
+                    <span class="login-brand-sub">I.E.P. N&deg; 88044</span>
+                    <span class="login-brand-desc">INTRANET INSTITUCIONAL </span>
+                </div>
+
+            </aside>
+
+            <!-- Costado del formulario de acceso -->
+            <section class="login-card">
+
+<div class="login-card-eyebrow">
+    <span class="login-card-eyebrow-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M3 12h18"></path>
+            <path d="M12 3c2.5 2.5 3.8 5.5 3.8 9S14.5 18.5 12 21"></path>
+            <path d="M12 3c-2.5 2.5-3.8 5.5-3.8 9S9.5 18.5 12 21"></path>
+        </svg>
+    </span>
+
+    <span class="login-card-eyebrow-text">Intranet</span>
+</div>
+
+                <!-- Mensaje de error (se muestra solo si el backend redirige con ?error=) -->
+                <p class="login-error" id="loginError" role="alert" hidden></p>
 
             <!-- Formulario -->
             <form
                 action="backend/auth/login.php"
                 method="POST"
                 class="login-form"
+                id="loginForm"
             >
 
                 <div class="form-group">
 
                     <label for="correo">
-                        Correo institucional
+                        USUARIO
                     </label>
 
                     <div class="input-container">
@@ -68,7 +91,7 @@
                 <div class="form-group">
 
                     <label for="password">
-                        Contraseña
+                        CLAVE
                     </label>
 
                     <div class="input-container">
@@ -108,7 +131,7 @@
                         <span>Recordarme</span>
                     </label>
 
-                    <a href="#" class="forgot-password">
+                    <a href="recuperar-contrasena.html" class="forgot-password">
                         ¿Olvidaste tu contraseña?
                     </a>
 
@@ -118,28 +141,31 @@
                 <button
                     type="submit"
                     class="btn-login"
+                    id="btnLogin"
                 >
-                    <span>Iniciar sesión</span>
+                    <span class="btn-login-label">Ingresar</span>
                     <span class="arrow">→</span>
                 </button>
 
             </form>
 
 
-            <!-- Pie -->
-            <div class="login-footer">
+                <!-- Pie -->
+                <div class="login-footer">
 
-                <p>
-                    Sistema exclusivo para personal autorizado
-                </p>
+                    <p>
+                        Sistema exclusivo para personal autorizado
+                    </p>
 
-                <span>
-                    © 2026 IE 88044
-                </span>
+                    <span>
+                        © 2026 I.E.P. 88044 ABRAHAM VALDELOMAR 
+                    </span>
 
-            </div>
+                </div>
 
-        </section>
+            </section>
+
+        </div>
 
     </main>
 
@@ -167,6 +193,43 @@
             }
 
         }
+
+        // ==========================================
+        // Mensaje de error enviado por backend/auth/login.php
+        // (login.php redirige aquí con ?error=mensaje cuando
+        // el correo, la contraseña o el estado del usuario no
+        // son válidos; no cambia la lógica de autenticación,
+        // solo cómo se muestra el mensaje).
+        // ==========================================
+        (function mostrarErrorSiExiste() {
+            const params = new URLSearchParams(window.location.search);
+            const mensaje = params.get("error");
+            const errorBox = document.getElementById("loginError");
+
+            if (mensaje && errorBox) {
+                errorBox.textContent = mensaje;
+                errorBox.hidden = false;
+            }
+        })();
+
+        // ==========================================
+        // Estado de carga del botón "Ingresar" mientras
+        // el navegador envía el formulario (no interfiere
+        // con el envío real ni con la validación existente).
+        // ==========================================
+        (function estadoCargaLogin() {
+            const form = document.getElementById("loginForm");
+            const btn = document.getElementById("btnLogin");
+            if (!form || !btn) return;
+
+            form.addEventListener("submit", () => {
+                if (!form.checkValidity()) return; // deja que el navegador muestre los campos requeridos
+                btn.disabled = true;
+                btn.classList.add("is-loading");
+                const label = btn.querySelector(".btn-login-label");
+                if (label) label.textContent = "Ingresando...";
+            });
+        })();
 
     </script>
 

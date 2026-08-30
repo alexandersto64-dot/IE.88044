@@ -96,7 +96,7 @@ img{ max-width: 100%; display:block; }
 }
 .btn-primary{
   background: var(--sun);
-  color: var(--ocean-deep);
+  color: var(--ink);
 }
 .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 8px 18px rgba(217,164,49,.35); }
 .btn-ghost{
@@ -196,6 +196,18 @@ img{ max-width: 100%; display:block; }
   letter-spacing: .3px;
   white-space: nowrap;
 }
+.brand-slogan{
+  display:block;
+  font-style: normal;
+  font-family: var(--font-body);
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--teal);
+  letter-spacing: .2px;
+  white-space: nowrap;
+  text-align: center;
+  margin-top: 3px;
+}
 
 .site-nav{ display:flex; align-items:center; flex-wrap: wrap; gap: 10px; }
 
@@ -263,9 +275,11 @@ img{ max-width: 100%; display:block; }
 }
 .partner-link{
   display:flex;
+  flex-direction: column;
   align-items:center;
   justify-content:center;
-  padding: 4px;
+  gap: 3px;
+  padding: 4px 6px;
   border-radius: var(--radius-sm);
   transition: transform .18s ease, box-shadow .18s ease;
 }
@@ -275,10 +289,20 @@ img{ max-width: 100%; display:block; }
 }
 .partner-logo{
   display:block;
-  height: 34px;
-  width: auto;
-  max-width: 60px;
-  object-fit: contain;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--white);
+  border: 1px solid rgba(16,40,78,.12);
+}
+.partner-name{
+  display:block;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--ocean-deep);
+  white-space: nowrap;
+  line-height: 1.1;
 }
 
 /* Dropdown */
@@ -426,6 +450,7 @@ img{ max-width: 100%; display:block; }
   min-width: 220px;
   border-top: 3px solid var(--sun);
 }
+.dropdown .dropdown a{ white-space: nowrap; }
 .dropdown a[aria-current="page"] .dropdown-icon{ color: var(--teal); }
 .dropdown a:hover{ background: var(--sand); border-left-color: var(--sun); color: var(--ocean-deep); transform: translateX(2px); }
 /* ============ DOCENTES Y HORARIOS ============ */
@@ -629,6 +654,7 @@ img{ max-width: 100%; display:block; }
   transition: background .2s ease, border-color .2s ease, transform .18s ease, box-shadow .2s ease;
 }
 .intranet-toggle .icon{ width: 15px; height: 15px; }
+.intranet-toggle .intranet-logo-img{ width: 18px; height: 18px; object-fit: contain; border-radius: 4px; flex: 0 0 auto; }
 .intranet-toggle:hover{
   background: var(--sand);
   border-color: var(--sun);
@@ -703,25 +729,33 @@ img{ max-width: 100%; display:block; }
 /* ============ HERO ============ */
 .hero{
   position: relative;
-  background:
-    linear-gradient(150deg, rgba(16,40,78,.93) 0%, rgba(29,76,134,.90) 55%, rgba(200,16,46,.55) 130%),
-    url("img/brand/fachada-hero.jpg");
-  background-size: cover;
-  background-position: center 35%;
-  color: var(--white);
-  padding: 96px 0 140px;
-  overflow: hidden;
+  background: var(--white);
+  padding: 24px 0 60px;
 }
 .hero-inner{ max-width: 760px; }
-.hero-inner.has-carousel{ max-width: 1100px; }
+/* El carrusel ya no vive dentro de una tarjeta pequeña sobre un fondo
+   grande: ocupa todo el ancho disponible del .container del sitio
+   (misma referencia de ancho que el resto de las secciones). */
+.hero-inner.has-carousel{ max-width: 100%; }
 
 /* Carrusel de fotos en el Hero: reutiliza el componente de carrusel
-   de la galería (mismas clases .gallery-carousel-wrap/.gallery-item),
-   solo se ajustan proporción y sombra para el contexto del Hero. */
-.hero-carousel{ box-shadow: 0 24px 60px rgba(0,0,0,.35); border-radius: var(--radius-md); }
-.hero-carousel .gallery-item{ aspect-ratio: 2.4/1; }
-@media (max-width: 720px){
-  .hero-carousel .gallery-item{ aspect-ratio: 4/3; }
+   de la galería (mismas clases .gallery-carousel-wrap/.gallery-item).
+   El carrusel es ahora el hero principal de la página: ocupa el
+   espacio que antes ocupaba el fondo azul/degradado independiente. */
+.hero-carousel{ box-shadow: 0 24px 60px rgba(0,0,0,.28); border-radius: var(--radius-md); }
+/* Relación 12/5 (~2.4:1): coincide con la proporción real de las fotos
+   panorámicas del colegio (fachada/patio), minimizando las franjas
+   vacías que deja object-fit:contain sin llegar a recortar la imagen. */
+.hero-carousel .gallery-item{
+  aspect-ratio: 12/5;
+  min-height: 260px;
+  max-height: 560px;
+}
+@media (max-width: 900px){
+  .hero-carousel .gallery-item{ aspect-ratio: 16/9; max-height: 420px; min-height: 220px; }
+}
+@media (max-width: 640px){
+  .hero-carousel .gallery-item{ aspect-ratio: 4/3; max-height: 340px; min-height: 200px; }
 }
 .eyebrow{
   text-transform: uppercase;
@@ -751,11 +785,6 @@ img{ max-width: 100%; display:block; }
   border-left: 3px solid var(--sun);
   padding-left: 14px;
 }
-.hero-wave{
-  position:absolute; left:0; right:0; bottom:-2px; line-height:0;
-}
-.hero-wave svg{ width:100%; height:90px; display:block; }
-.hero-wave path{ fill: var(--sand); }
 
 /* ============ WELCOME LETTER (Bienvenida) ============ */
 .welcome-letter{
@@ -778,7 +807,7 @@ img{ max-width: 100%; display:block; }
   padding: 16px;
 }
 .placeholder-photo span{
-  color:#a89a72;
+  color: var(--teal);
   font-size:var(--text-sm);
   font-style:italic;
 }
@@ -988,80 +1017,198 @@ a.info-card{ display:block; }
 .site-footer{
   position: relative;
   background: var(--ocean-deep);
-  padding-top: 40px;
+  padding-top: 18px;
   color: rgba(255,255,255,.85);
 }
-.footer-wave{ line-height:0; margin-top:-1px; }
-.footer-wave svg{ width:100%; height:60px; display:block; }
-.footer-wave path{ fill: var(--ocean-deep); }
+
+.footer-wave{
+  line-height: 0;
+  margin-top: -1px;
+}
+
+.footer-wave svg{
+  width: 100%;
+  height: 35px;
+  display: block;
+}
+
+.footer-wave path{
+  fill: var(--ocean-deep);
+}
 
 .footer-top{
   position: relative;
-  display:flex;
-  flex-wrap:wrap;
-  gap: 40px;
-  padding: 12px 24px 32px;
-  border-bottom: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 8px 24px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.18);
 }
-.footer-col{ flex: 1 1 220px; min-width: 200px; }
-.footer-col-ubiquenos{ display:flex; gap:16px; align-items:flex-start; flex: 1 1 260px; }
-.footer-logo{ border-radius: var(--radius-md); flex-shrink:0; }
+.footer-note{
+  width: 100%;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: rgba(255,255,255,.55);
+  margin: 12px 0 0;
+  padding-bottom: 14px;
+}
+.footer-top::after{
+  content: "";
+  position: absolute;
+  left: -24px;
+  right: -24px;
+  bottom: 0;
+  height: 1px;
+  background: rgba(255,255,255,.25);
+}
+
+.footer-col{
+  flex: 1 1 220px;
+  min-width: 200px;
+
+}
+/* =================================
+   SEPARADORES ENTRE COLUMNAS
+================================= */
+
+.footer-top > .footer-col{
+  position: relative;
+}
+
+/* Línea entre Ubíquenos y Contáctenos */
+.footer-top > .footer-col:not(:last-child)::after{
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: -12px;
+  width: 1px;
+  height: calc(100% - 10px);
+  background: rgba(255,255,255,.15);
+}
+.footer-top > .footer-col{
+  position: relative;
+  padding: 0 12px;
+}
+@media (max-width: 700px){
+  .footer-top > .footer-col:not(:last-child)::after{
+    display: none;
+  }
+}
+.footer-col-ubiquenos{
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex: 1 1 260px;
+}
+
+.footer-logo{
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
 .footer-col-title{
   color: var(--white);
   font-family: var(--font-display);
   font-size: var(--text-lg);
-  margin: 0 0 10px;
+  margin: 0 0 6px;
 }
-.footer-line{ margin: 0 0 6px; font-size: var(--text-base); color: rgba(255,255,255,.78); }
-.footer-line a{ color: var(--white); font-weight:600; }
-.footer-line a:hover{ color: var(--sun); }
+
+
+.footer-line{
+  margin: 0 0 4px;
+  font-size: var(--text-base);
+  color: rgba(255,255,255,.78);
+}
+
+.footer-line a{
+  color: var(--white);
+  font-weight: 600;
+}
+
+.footer-line a:hover{
+  color: var(--sun);
+}
 
 .footer-social-link{
-  display:inline-flex;
-  align-items:center;
-  gap: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: rgba(255,255,255,.85);
   font-size: var(--text-base);
-  font-weight:600;
+  font-weight: 600;
 }
+
 .footer-social-icon{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width: 30px; height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: rgba(255,255,255,.12);
   color: var(--white);
 }
-.footer-social-icon .icon{ width:16px; height:16px; }
 
-.footer-arriba{
-  position:absolute;
-  top: 0; right: 24px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  background:none;
-  border: 1.5px solid rgba(255,255,255,.5);
+.footer-social-icon .icon{
+  width: 15px;
+  height: 15px;
+}
+
+/* ================================
+   REDES SOCIALES
+================================ */
+
+.footer-social-col{
+  text-align: center;
+}
+
+.footer-social-col .footer-col-title{
+  text-align: center;
+}
+
+/* Botón de Facebook */
+.footer-social-col .footer-social-link{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+/* Círculo de Facebook */
+.footer-social-col .footer-social-link .footer-social-icon{
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
   color: var(--white);
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: var(--text-sm);
-  font-weight:600;
-  cursor:pointer;
-}
-.footer-arriba:hover{ border-color: var(--sun); color: var(--sun); }
-.footer-arriba .icon{ width:14px; height:14px; }
 
-.footer-note{
-  width:100%;
-  text-align:center;
-  font-size:var(--text-sm);
-  color: rgba(255,255,255,.55);
-  margin: 20px 0 0;
-  padding-bottom: 24px;
+  transition:
+    background-color .25s ease,
+    border-color .25s ease,
+    transform .25s ease,
+    box-shadow .25s ease;
 }
 
+/* Icono Facebook */
+.footer-social-col .footer-social-link .footer-social-icon .icon{
+  width: 23px;
+  height: 23px;
+}
+
+/* Hover */
+.footer-social-col .footer-social-link:hover .footer-social-icon,
+.footer-social-col .footer-social-link:focus-visible .footer-social-icon{
+  background: #1877F2;
+  border-color: #1877F2;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 7px 18px rgba(0,0,0,.30);
+}
 /* ============ WHATSAPP FLOAT BUTTON ============ */
 .whatsapp-float{
   position: fixed;
@@ -1096,8 +1243,10 @@ a.info-card{ display:block; }
   .brand-text small{ font-size: var(--text-xs); white-space: normal; }
   .nav-toggle{ display:flex; }
   .header-top-right{ gap: 12px; }
-  .header-partners{ gap: 12px; }
-  .partner-logo{ height: 26px; max-width: 46px; }
+  .header-partners{ gap: 10px; }
+  .partner-logo{ width: 32px; height: 32px; }
+  .partner-name{ font-size: .6rem; }
+  .brand-slogan{ font-size: .82rem; white-space: normal; }
   .site-nav{
     position:absolute;
     top: 100%; left:0; right:0;
@@ -1164,15 +1313,17 @@ a.info-card{ display:block; }
   .nav-item.submenu.open > .dropdown-sublink .chev{ transform: rotate(180deg); }
   .levels-grid{ grid-template-columns: 1fr; }
   .quick-info-grid{ grid-template-columns: 1fr 1fr; }
-  .hero{ padding: 72px 0 120px; }
+  .hero{ padding: 16px 0 40px; }
   .gallery-grid{ grid-template-columns: 1fr; }
 }
 @media (max-width: 480px){
   .brand-mark{ width: 44px; height: 44px; }
   .brand-text strong{ font-size: 1.3rem; }
   .header-top-right{ width: 100%; justify-content: space-between; }
-  .header-partners{ gap: 10px; }
-  .partner-logo{ height: 22px; max-width: 38px; }
+  .header-partners{ gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .partner-logo{ width: 28px; height: 28px; }
+  .partner-name{ font-size: .55rem; }
+  .brand-slogan{ font-size: .76rem; white-space: normal; }
 }
 
 /* Reduced motion */
@@ -1252,7 +1403,6 @@ a.info-card{ display:block; }
   object-fit: cover;
   transition: transform .25s ease;
 }
-.gallery-item:hover img{ transform: scale(1.06); }
 .gallery-item-caption{
   position:absolute;
   left:0; right:0; bottom:0;
@@ -1336,14 +1486,32 @@ a.info-card{ display:block; }
    contenedor tiene ADEMÁS la clase .gallery-carousel (agregada
    únicamente en galeria.html), así que el resto del sitio (por ejemplo
    la vista previa de galería en bienvenida.html) no se ve afectado. */
+/* IMPORTANTE: el recorte (overflow:hidden) vive en este contenedor
+   ESTÁTICO (nunca se mueve), NO en el track que se desliza. Antes,
+   overflow:hidden y el transform de deslizamiento estaban en el MISMO
+   elemento (#galleryCarousel); esa combinación provoca un bug de
+   pintado en Chrome/Chromium que deja la 2ª y 3ª foto en blanco al
+   avanzar (el layout se calcula bien, pero el navegador no pinta el
+   contenido ya trasladado). Separar "quién recorta" de "quién se
+   mueve" en dos elementos distintos evita el bug. NO reunificar. */
 .gallery-carousel-wrap{
   position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
 }
 .gallery-grid.gallery-carousel{
   display: flex;
   flex-wrap: nowrap;
-  overflow: hidden;
-  border-radius: var(--radius-md);
+  /* La grilla estática (.gallery-grid) define gap:18px para su layout
+     en cuadrícula. El JS del carrusel (js/main.js) calcula el
+     translateX asumiendo que cada slide ocupa exactamente 100% del
+     ancho sin espacio extra entre ellos. Si el gap heredado no se
+     anula aquí, el track queda más ancho que la suma de translateX
+     esperada: cada transición se desalinea un poco más (arrastrando
+     el error acumulado), dejando un borde de la foto anterior visible
+     junto a la nueva. Anular el gap solo en el carrusel corrige el
+     cálculo sin tocar la cuadrícula estática de galeria.html. */
+  gap: 0;
 }
 .gallery-carousel .gallery-item{
   flex: 0 0 100%;
@@ -1353,6 +1521,25 @@ a.info-card{ display:block; }
 }
 @media (prefers-reduced-motion: reduce){
   .gallery-carousel .gallery-item{ transition: none; }
+}
+/* Dentro del carrusel (a diferencia de la cuadrícula estática de la
+   galería) la imagen NO debe recortarse: cada foto puede tener una
+   relación de aspecto distinta (panorámica, 4:3, retrato, etc.), así
+   que se usa "contain" para mostrarla completa y sin deformarla. El
+   fondo azul institucional rellena el espacio sobrante cuando la
+   proporción de la foto no coincide exactamente con la del contenedor. */
+.gallery-carousel .gallery-item img{
+  object-fit: contain;
+  background: var(--ocean-deep, #10284e);
+}
+/* Carrusel del HERO (portada, .hero-carousel): a diferencia del
+   carrusel de galeria.html, aquí la foto debe ocupar el 100% del
+   área del carrusel sin dejar ver el fondo azul institucional detrás.
+   Se sobrescribe únicamente aquí (mayor especificidad + declarado
+   después) para no afectar al carrusel de galeria.html. */
+.hero-carousel .gallery-item img{
+  object-fit: cover;
+  background: transparent;
 }
 
 .carousel-btn{
@@ -1650,7 +1837,7 @@ a.info-card{ display:block; }
   align-items:center;
   justify-content:center;
   font-size: .64rem;
-  color:#a89a72;
+  color: var(--teal);
   text-align:center;
   padding: 6px;
 }
@@ -1701,16 +1888,205 @@ a.info-card{ display:block; }
   .footer-col-ubiquenos{ flex-basis: 100%; }
 }
 
+/* ============ DOCENTES POR GRADO/SECCIÓN + HORARIO (modal) ============ */
+.grade-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+.grade-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 6px;
+  background: var(--white);
+  border: 1px solid #e7edf1;
+  border-radius: var(--radius-md);
+  padding: 22px 16px;
+  text-align:center;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.grade-card:hover{ transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--sun); }
+.grade-card-icon{
+  width: 46px; height:46px;
+  border-radius: 50%;
+  background: var(--sand);
+  color: var(--ocean-deep);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom: 4px;
+}
+.grade-card-icon .icon{ width:22px; height:22px; }
+.grade-card strong{ font-family: var(--font-display); font-size: var(--text-lg); color: var(--ink); }
+.grade-card span{ font-size: var(--text-sm); color: var(--text-secondary); }
+
+.section-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+  max-width: 620px;
+}
+.section-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 4px;
+  background: var(--white);
+  border: 2px solid var(--sand);
+  border-radius: var(--radius-md);
+  padding: 26px 12px;
+  text-align:center;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.section-card:hover{ transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--ocean-mid); }
+.section-card-letter{
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--ocean-deep);
+}
+.section-card span{ font-size: var(--text-sm); color: var(--text-secondary); }
+
+/* Tarjeta de docente con fotografía real (distinta de .teacher-card,
+   que usa un círculo con iniciales/placeholder de texto). Reutiliza
+   .teacher-role y .teacher-modal-* para mantener consistencia visual. */
+.staff-photo-card{
+  background: var(--white);
+  border: 1px solid #e7edf1;
+  border-radius: var(--radius-md);
+  padding: 22px;
+  text-align:center;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.staff-photo-card:hover{ transform: translateY(-4px); box-shadow: var(--shadow); }
+.staff-photo-frame{
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  overflow:hidden;
+  margin: 0 auto 14px;
+  background: var(--sand);
+  border: 2px dashed #c9d9ec;
+  display:flex; align-items:center; justify-content:center;
+}
+.staff-photo-frame img{ width:100%; height:100%; object-fit:cover; display:block; }
+.staff-photo-frame span{ font-size:.6rem; color: var(--teal); text-align:center; padding:4px; }
+.staff-photo-card h4{ font-size: var(--text-md); margin: 0 0 2px; color: var(--ink); }
+.staff-photo-meta{ font-size: var(--text-sm); color: var(--text-secondary); margin: 0 0 4px; }
+.staff-photo-card .teacher-role{ display:block; margin-bottom: 14px; }
+.teacher-schedule-btn{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  background: none;
+  border: 1.5px solid var(--ocean-deep);
+  color: var(--ocean-deep);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, transform .15s ease;
+}
+.teacher-schedule-btn:hover{ background: var(--sand); transform: translateY(-2px); }
+.teacher-schedule-btn .icon{ width: 15px; height: 15px; }
+
+.staff-photo-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Modal de horario: reutiliza el mismo overlay/close/estructura que
+   .teacher-modal-overlay para que ambos modales luzcan consistentes. */
+.schedule-modal{ max-width: 620px; text-align:left; }
+.schedule-modal h3{ margin-top: 4px; text-align:left; }
+.schedule-modal .teacher-role{ text-align:left; display:block; margin-bottom: 16px; }
+.schedule-table-wrap{ overflow-x:auto; }
+.schedule-table{ width:100%; border-collapse:collapse; font-size: var(--text-sm); }
+.schedule-table th{
+  text-align:left;
+  background: var(--sand);
+  color: var(--ink);
+  font-weight:700;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--sun);
+}
+.schedule-table td{
+  padding: 10px 12px;
+  border-bottom: 1px solid #e7edf1;
+  color: var(--ink);
+}
+.schedule-table tr:last-child td{ border-bottom:none; }
+
+@media (max-width: 900px){
+  .grade-grid{ grid-template-columns: 1fr 1fr; }
+  .staff-photo-grid{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px){
+  .grade-grid{ grid-template-columns: 1fr; }
+  .section-grid{ grid-template-columns: repeat(3, 1fr); max-width:100%; }
+  .staff-photo-grid{ grid-template-columns: 1fr; }
+}
+
+/* ============ MODAL DE DOCUMENTOS PDF (FUT / Reglamento Interno) ============ */
+/* Reutiliza .teacher-modal-overlay / .teacher-modal / .teacher-modal-close
+   (ver más arriba) para mantener el mismo lenguaje visual que los demás
+   modales del sitio. Solo se añaden aquí las reglas propias del visor
+   de PDF (iframe) y del botón de descarga. */
+.doc-modal{
+  max-width: 720px;
+  width: 92vw;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+}
+.doc-modal #docModalTitle{ margin: 0 34px 14px 0; text-align:left; }
+.doc-modal-viewer{
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 320px;
+  height: 60vh;
+  max-height: 65vh;
+  border: 1px solid #e7edf1;
+  border-radius: var(--radius-sm, 10px);
+  overflow: hidden;
+  background: var(--sand);
+}
+.doc-modal-viewer iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.doc-modal-actions{
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.doc-modal-actions .btn{ width: 100%; text-align: center; }
+
+@media (min-width: 560px){
+  .doc-modal-actions .btn{ width: auto; }
+}
+@media (max-width: 640px){
+  .doc-modal{ padding: 20px; width: 94vw; max-height: 92vh; }
+  .doc-modal-viewer{ height: 50vh; min-height: 260px; }
+}
+
 /* Visible keyboard focus */
 a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
   outline: 3px solid var(--sun);
   outline-offset: 2px;
 }
 /* ================================
-   RESET
+   RESET (solo dentro del login — ver .login-page)
 ================================ */
 
-* {
+.login-page, .login-page *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -1718,10 +2094,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 
 
 /* ================================
-   BODY
+   BODY / FONDO
 ================================ */
 
-body {
+.login-page {
     min-height: 100vh;
 
     font-family:
@@ -1729,49 +2105,109 @@ body {
         Arial,
         sans-serif;
 
-    background:
-        linear-gradient(
-            135deg,
-            #0f172a 0%,
-            #1e3a8a 50%,
-            #2563eb 100%
-        );
-
     color: #1e293b;
+
+    /* Respaldo claro por si la imagen de fondo tarda en cargar */
+    background: linear-gradient(135deg, #eaf3ff 0%, #f6fbff 55%, #ffffff 100%);
 }
 
 
 /* ================================
-   CONTENEDOR
+   CONTENEDOR (tarjeta centrada sobre
+   el fondo tecnológico)
 ================================ */
 
 .login-container {
     min-height: 100vh;
+    width: 100%;
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
-    padding: 30px;
+    position: relative;
+
+    padding: 30px 6vw;
+}
+
+.login-card-eyebrow{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.login-card-eyebrow-icon{
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card-eyebrow-icon svg{
+    width: 58px;
+    height: 58px;
+    display: block;
+}
+
+.login-card-eyebrow-text{
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+/* Fondo tecnológico (círculos/detalles digitales en azul claro),
+   con una capa blanca translúcida encima para no restar
+   legibilidad al formulario. */
+.login-photo {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.82) 0%,
+            rgba(240, 247, 254, 0.75) 45%,
+            rgba(255, 255, 255, 0.88) 100%
+        ),
+        url("../img/brand/login-fondo.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 
 /* ================================
-   TARJETA
+   TARJETA (glassmorphism sutil)
 ================================ */
 
 .login-card {
+    position: relative;
+    z-index: 1;
+
     width: 100%;
-    max-width: 450px;
+    max-width: 440px;
 
-    background: rgba(255, 255, 255, 0.97);
+    max-height: 94vh;
+    overflow-y: auto;
 
-    padding: 42px;
+    background: rgba(255, 255, 255, 0.86);
+
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+
+    padding: 32px 40px;
 
     border-radius: 24px;
 
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
     box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.30);
+        0 20px 50px rgba(16, 40, 78, 0.18);
 
     animation: aparecer 0.6s ease;
 }
@@ -1798,17 +2234,18 @@ body {
    LOGO
 ================================ */
 
+/* ESCUDO */
 .logo-container {
     display: flex;
     justify-content: center;
-
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 28px;
 }
 
 
 .logo {
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
 
     object-fit: contain;
 
@@ -1829,7 +2266,7 @@ body {
 .login-header {
     text-align: center;
 
-    margin-bottom: 30px;
+    margin-bottom: 18px;
 }
 
 
@@ -1850,6 +2287,42 @@ body {
 }
 
 
+/* Identidad institucional del Login: nombre del colegio arriba
+   (destacado) y "Intranet 88044" debajo, en tamaño menor. */
+.login-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 7px;
+}
+
+.login-brand-title {
+    font-family: var(--font-display, inherit);
+
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.3;
+
+    color: #0f172a;
+
+    letter-spacing: .3px;
+
+    margin-bottom: 6px;
+}
+
+.login-brand-sub {
+    font-size: 12.5px;
+    font-weight: 700;
+
+    color: #2563eb;
+
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+
 .login-header h1 {
     font-size: 30px;
 
@@ -1867,6 +2340,40 @@ body {
 
 
 /* ================================
+   MENSAJE DE ERROR
+================================ */
+
+.login-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+
+    padding: 12px 16px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    margin-bottom: 22px;
+}
+
+.login-error::before {
+    content: "⚠";
+    font-size: 15px;
+    flex: 0 0 auto;
+}
+
+.login-error[hidden] {
+    display: none;
+}
+
+
+/* ================================
    FORMULARIO
 ================================ */
 
@@ -1875,7 +2382,7 @@ body {
 
     flex-direction: column;
 
-    gap: 20px;
+    gap: 16px;
 }
 
 
@@ -1884,7 +2391,7 @@ body {
 
     flex-direction: column;
 
-    gap: 8px;
+    gap: 6px;
 }
 
 
@@ -1913,7 +2420,7 @@ body {
 .input-container input {
     width: 100%;
 
-    height: 52px;
+    height: 48px;
 
     padding: 0 48px;
 
@@ -2044,13 +2551,43 @@ body {
 
 
 /* ================================
+   PÁGINA "RECUPERAR CONTRASEÑA"
+================================ */
+
+.recovery-info {
+    margin-bottom: 24px;
+}
+
+.recovery-info p {
+    color: #475569;
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.recovery-info p:last-child {
+    margin-bottom: 0;
+}
+
+.recovery-back {
+    text-decoration: none;
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+}
+
+
+/* ================================
    BOTÓN
 ================================ */
 
 .btn-login {
     width: 100%;
 
-    height: 54px;
+    height: 50px;
 
     display: flex;
 
@@ -2099,6 +2636,14 @@ body {
 }
 
 
+.btn-login:disabled,
+.btn-login.is-loading {
+    opacity: 0.8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
 .arrow {
     font-size: 20px;
 
@@ -2118,9 +2663,9 @@ body {
 .login-footer {
     text-align: center;
 
-    margin-top: 28px;
+    margin-top: 16px;
 
-    padding-top: 20px;
+    padding-top: 12px;
 
     border-top: 1px solid #e2e8f0;
 
@@ -2143,6 +2688,17 @@ body {
 
     .login-container {
         padding: 15px;
+        justify-content: center;
+    }
+
+    .login-photo {
+        background-image:
+            linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.88) 0%,
+                rgba(240, 247, 254, 0.85) 100%
+            ),
+            url("../img/brand/login-fondo.jpg");
     }
 
 
@@ -2150,6 +2706,12 @@ body {
         padding: 30px 22px;
 
         border-radius: 18px;
+    }
+
+
+    .logo {
+        width: 92px;
+        height: 92px;
     }
 
 
@@ -2166,3 +2728,812 @@ body {
 
 }
 
+/* ================================================================
+   LOGIN — VARIANTE DIGITAL (solo login.html)
+   Todo lo de aquí en adelante depende de la clase adicional
+   ".login-tech" en el <body>. recuperar-contrasena.html usa
+   ".login-page" sin ".login-tech", así que conserva exactamente
+   su diseño original de una sola tarjeta centrada: nada de esto
+   le aplica ni sus clases compartidas (.login-card, .logo,
+   .login-brand, .login-brand-title, .login-brand-sub,
+   .login-footer, etc.) fueron redefinidas de forma destructiva,
+   solo se agregaron reglas nuevas o reglas con prefijo
+   ".login-tech" / ".login-brand-panel".
+================================================================ */
+
+.login-tech {
+    background: linear-gradient(160deg, #0b1830 0%, #10254a 48%, #0c1c3a 100%);
+    color: #e7edf7;
+}
+
+/* Imagen de fondo */
+.login-bg-digital {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.10),
+            rgba(0, 91, 150, 0.08)
+        );
+
+    z-index: 0;
+    pointer-events: none;
+}
+
+
+/* Contenido encima del fondo */
+.login-shell {
+    position: relative;
+    z-index: 2;
+}
+
+.login-container--split {
+    overflow: hidden;
+}
+
+/* Contenedor de los dos costados: en escritorio, formulario a la
+   izquierda e identidad institucional a la derecha (row-reverse
+   invierte el orden del DOM: panel institucional primero en el
+   HTML para que en celular aparezca arriba, y a la derecha en
+   escritorio). */
+.login-shell {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 960px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 32px;
+}
+
+/* Costado institucional */
+.login-brand-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.logo-container .logo {
+    width: 190px;
+    height: 190px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 12px 25px rgba(0, 0, 0, .25));
+}
+.login-brand-panel .logo {
+    width: 96px;
+    height: 96px;
+
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(186, 230, 253, 0.35);
+
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.12);
+}
+
+.login-brand-panel .login-brand {
+    margin-top: 18px;
+    gap: 4px;
+}
+
+.login-brand-panel .login-brand-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: .4px;
+    margin-bottom: 2px;
+}
+
+.login-brand-panel .login-brand-sub {
+    font-size: 13px;
+    font-weight: 700;
+    color: #bcd4f7;
+    letter-spacing: 1.4px;
+}
+
+.login-brand-desc {
+    display: block;
+
+    margin-top: 10px;
+
+    font-size: 13px;
+    font-weight: 500;
+    color: #8fa6c9;
+    letter-spacing: .4px;
+}
+
+/* Etiqueta "Intranet" dentro de la tarjeta, sustituye al
+   encabezado con escudo (que ahora vive en .login-brand-panel) */
+.login-card-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 20px;
+
+    font-size: 13px;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.login-card-eyebrow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2563eb;
+}
+
+@media (min-width: 861px) {
+
+    .login-shell {
+        flex-direction: row-reverse;
+        align-items: center;
+        gap: 64px;
+    }
+
+    .login-brand-panel {
+        flex: 1 1 380px;
+    }
+
+    .login-card {
+        flex: 0 0 auto;
+    }
+
+}
+
+@media (max-width: 860px) {
+
+    .login-tech .login-container--split {
+        align-items: flex-start;
+        padding: 40px 20px;
+    }
+
+}
+
+/* =========================================================
+   NOTICIA INSTITUCIONAL — MODAL PROFESIONAL
+========================================================= */
+
+.institutional-news {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
+}
+
+.institutional-news.is-open {
+  opacity: 1;
+  visibility: visible;
+
+  pointer-events: auto;
+}
+
+/* =========================================================
+   FONDO
+========================================================= */
+
+.institutional-news__backdrop {
+  position: absolute;
+  inset: 0;
+
+  background:
+    rgba(10, 18, 32, 0.76);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* =========================================================
+   VENTANA
+========================================================= */
+
+.institutional-news__dialog {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  grid-template-columns: 44% 56%;
+
+  width: min(920px, 94vw);
+
+  max-height: min(620px, 90vh);
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.35);
+
+  transform:
+    translateY(25px)
+    scale(0.96);
+
+  transition:
+    transform 0.45s
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.institutional-news.is-open
+.institutional-news__dialog {
+  transform:
+    translateY(0)
+    scale(1);
+}
+
+/* =========================================================
+   IMAGEN
+========================================================= */
+
+.institutional-news__media {
+  position: relative;
+
+  min-height: 480px;
+
+  overflow: hidden;
+
+  background: #dfe5ed;
+}
+
+.institutional-news__image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transform: scale(1.04);
+
+  transition:
+    transform 0.9s
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.institutional-news.is-open
+.institutional-news__image {
+  transform: scale(1);
+}
+
+/* Degradado */
+.institutional-news__media-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.02) 45%,
+      rgba(0, 0, 0, 0.48) 100%
+    );
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.institutional-news__badge {
+  position: absolute;
+
+  left: 24px;
+  bottom: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 13px;
+
+  border: 1px solid rgba(255,255,255,0.35);
+
+  border-radius: 50px;
+
+  background:
+    rgba(255,255,255,0.92);
+
+  color: #174c91;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.8px;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.12);
+}
+
+.institutional-news__badge-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #174c91;
+}
+
+/* =========================================================
+   CERRAR
+========================================================= */
+
+.institutional-news__close {
+  position: absolute;
+
+  top: 16px;
+  right: 16px;
+
+  z-index: 10;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(255,255,255,0.25);
+
+  border-radius: 50%;
+
+  background:
+    rgba(0,0,0,0.4);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.institutional-news__close svg {
+  width: 19px;
+  height: 19px;
+}
+
+.institutional-news__close:hover {
+  background:
+    rgba(0,0,0,0.72);
+
+  transform: rotate(90deg);
+}
+
+/* =========================================================
+   CONTENIDO
+========================================================= */
+
+.institutional-news__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 54px 52px 48px;
+
+  overflow-y: auto;
+}
+
+/* =========================================================
+   EYEBROW
+========================================================= */
+
+.institutional-news__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 18px;
+
+  color: #174c91;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.1px;
+
+  text-transform: uppercase;
+}
+
+.institutional-news__eyebrow-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: 8px;
+
+  background: #edf4ff;
+}
+
+.institutional-news__eyebrow-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.institutional-news__title {
+  max-width: 480px;
+
+  margin: 0;
+
+  color: #172033;
+
+  font-family: "Baloo 2", sans-serif;
+
+  font-size: clamp(32px, 4vw, 46px);
+
+  font-weight: 800;
+
+  line-height: 1.05;
+
+  letter-spacing: -0.5px;
+}
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.institutional-news__info {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 9px;
+
+  margin-top: 20px;
+
+  color: #727b8b;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.institutional-news__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.institutional-news__date svg {
+  width: 14px;
+  height: 14px;
+}
+
+.institutional-news__divider {
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #c5cad2;
+}
+
+.institutional-news__status {
+  color: #174c91;
+}
+
+/* =========================================================
+   DESCRIPCIÓN
+========================================================= */
+
+.institutional-news__description {
+  max-width: 480px;
+
+  margin: 23px 0 0;
+
+  color: #596273;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.75;
+}
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.institutional-news__actions {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 31px;
+}
+
+/* Principal */
+.institutional-news__primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 11px;
+
+  min-height: 46px;
+
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1557b0,
+      #123f82
+    );
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 8px 22px rgba(21,87,176,0.2);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.institutional-news__primary svg {
+  width: 16px;
+  height: 16px;
+
+  transition:
+    transform 0.2s ease;
+}
+
+.institutional-news__primary:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 27px rgba(21,87,176,0.28);
+}
+
+.institutional-news__primary:hover svg {
+  transform: translateX(4px);
+}
+
+/* Secundario */
+.institutional-news__secondary {
+  padding: 8px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #7b8492;
+
+  font-family: "Inter", sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease;
+}
+
+.institutional-news__secondary:hover {
+  color: #172033;
+}
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.institutional-news__close:focus-visible,
+.institutional-news__primary:focus-visible,
+.institutional-news__secondary:focus-visible {
+  outline: 3px solid rgba(23, 76, 145, 0.3);
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body.institutional-news-open {
+  overflow: hidden;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 800px) {
+
+  .institutional-news__dialog {
+    grid-template-columns: 1fr;
+
+    width: min(620px, 94vw);
+
+    max-height: 90vh;
+  }
+
+  .institutional-news__media {
+    min-height: 270px;
+
+    height: 270px;
+  }
+
+  .institutional-news__content {
+    padding: 30px 32px 32px;
+  }
+
+  .institutional-news__title {
+    font-size: 34px;
+  }
+
+}
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 560px) {
+
+  .institutional-news {
+    padding: 12px;
+  }
+
+  .institutional-news__dialog {
+    width: 100%;
+
+    max-height: 94vh;
+
+    border-radius: 18px;
+  }
+
+  .institutional-news__media {
+    height: 200px;
+    min-height: 200px;
+  }
+
+  .institutional-news__badge {
+    left: 16px;
+    bottom: 16px;
+
+    padding: 7px 11px;
+
+    font-size: 9px;
+  }
+
+  .institutional-news__close {
+    top: 11px;
+    right: 11px;
+
+    width: 37px;
+    height: 37px;
+  }
+
+  .institutional-news__content {
+    padding: 23px 20px 22px;
+  }
+
+  .institutional-news__eyebrow {
+    margin-bottom: 12px;
+
+    font-size: 10px;
+  }
+
+  .institutional-news__eyebrow-icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  .institutional-news__title {
+    font-size: 27px;
+
+    line-height: 1.08;
+  }
+
+  .institutional-news__info {
+    margin-top: 14px;
+
+    font-size: 10px;
+  }
+
+  .institutional-news__description {
+    margin-top: 17px;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+
+  .institutional-news__actions {
+    margin-top: 22px;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 7px;
+  }
+
+  .institutional-news__primary {
+    width: 100%;
+  }
+
+  .institutional-news__secondary {
+    min-height: 35px;
+  }
+
+}
+
+/* =========================================================
+   REDUCIR ANIMACIONES
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .institutional-news,
+  .institutional-news__dialog,
+  .institutional-news__image,
+  .institutional-news__close,
+  .institutional-news__primary,
+  .institutional-news__primary svg {
+    transition: none;
+  }
+
+}

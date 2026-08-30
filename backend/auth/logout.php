@@ -41,6 +41,6 @@ session_destroy();
 // VOLVER AL LOGIN
 // ==========================================
 
-header("Location: ../../index.html");
+header("Location: ../../login.html");
 
 exit;

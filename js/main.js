@@ -704,3 +704,296 @@ try {
   console.error('[main.js] Error en tarjetas de docentes (modal):', err);
 }
 
+// ============ HORARIO POR DOCENTE (modal reutilizable) ============
+// Cada botón "Ver horario" trae sus datos en atributos data-*:
+//   data-teacher-name, data-teacher-role  -> encabezado del modal
+//   data-schedule  -> JSON con las filas: [{"dia":"","hora":"","curso":"","grado":""}]
+// El mismo modal se reutiliza para todos los profesores de la página:
+// al pulsar "Ver horario" en otro profesor, el contenido se reemplaza
+// por completo (nunca se mezcla con el horario anterior).
+try {
+  const scheduleButtons = document.querySelectorAll('.teacher-schedule-btn');
+  const scheduleModalOverlay = document.getElementById('scheduleModalOverlay');
+
+  if (scheduleButtons.length && scheduleModalOverlay) {
+    const scheduleModalName = document.getElementById('scheduleModalName');
+    const scheduleModalRole = document.getElementById('scheduleModalRole');
+    const scheduleModalBody = document.getElementById('scheduleModalBody');
+    const scheduleModalClose = scheduleModalOverlay.querySelector('.teacher-modal-close');
+
+    function openScheduleModal(btn) {
+      scheduleModalName.textContent = btn.dataset.teacherName || '';
+      scheduleModalRole.textContent = btn.dataset.teacherRole || '';
+
+      let rows = [];
+      try { rows = JSON.parse(btn.dataset.schedule || '[]'); } catch (e) { rows = []; }
+
+      scheduleModalBody.innerHTML = rows.length
+        ? rows.map(r => `<tr><td>${r.dia || ''}</td><td>${r.hora || ''}</td><td>${r.curso || ''}</td><td>${r.grado || ''}</td></tr>`).join('')
+        : `<tr><td colspan="4" class="placeholder-text">[Horario pendiente de confirmar con el colegio]</td></tr>`;
+
+      scheduleModalOverlay.classList.add('open');
+    }
+
+    function closeScheduleModal() { scheduleModalOverlay.classList.remove('open'); }
+
+    scheduleButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // evita que también dispare el modal de biografía del docente
+        openScheduleModal(btn);
+      });
+    });
+
+    scheduleModalClose?.addEventListener('click', closeScheduleModal);
+    scheduleModalOverlay.addEventListener('click', (e) => { if (e.target === scheduleModalOverlay) closeScheduleModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && scheduleModalOverlay.classList.contains('open')) closeScheduleModal();
+    });
+  }
+} catch (err) {
+  console.error('[main.js] Error en modal de horario por docente:', err);
+}
+
+// ============ VISOR DE DOCUMENTOS PDF (modal reutilizable) ============
+// Intercepta los enlaces al FUT y al Reglamento Interno (en el menú
+// "Documentos Institucionales" y en documentos.html) para que, en vez
+// de abrir/descargar el PDF directamente, se muestre un modal con:
+// nombre del documento, vista previa (iframe) y botón de descarga.
+// El modal se crea una sola vez (inyectado en <body>) y se reutiliza
+// para ambos documentos, reemplazando su contenido cada vez.
+// No modifica ningún otro enlace ni funcionalidad existente.
+try {
+  // Mapa de rutas conocidas -> nombre visible del documento.
+  // Solo estos dos documentos abren el modal; cualquier otro enlace
+  // (incluidos otros PDF que pudieran añadirse en el futuro) sigue
+  // funcionando como hasta ahora.
+  const DOC_MODAL_FILES = {
+    'FUT-PRUEBA.pdf': 'FUT (Formulario Único de Trámite)',
+    'Reglamento-Interno-PRUEBA.pdf': 'Reglamento Interno',
+    'Calendarizacion-2026.pdf': 'Calendarización 2026',
+    'Normas-de-Convivencia-2026.pdf': 'Normas de Convivencia 2026'
+  };
+
+  function matchDocModalFile(href) {
+    if (!href) return null;
+    const cleanHref = href.split('?')[0].split('#')[0];
+    const fileName = cleanHref.substring(cleanHref.lastIndexOf('/') + 1);
+    return DOC_MODAL_FILES[fileName] ? { fileName, title: DOC_MODAL_FILES[fileName] } : null;
+  }
+
+  const docModalLinks = Array.from(document.querySelectorAll('a[href$=".pdf"]'))
+    .filter(link => matchDocModalFile(link.getAttribute('href')));
+
+  if (docModalLinks.length) {
+    let docModalOverlay, docModalTitle, docModalFrame, docModalDownload, docModalClose;
+
+    function buildDocModal() {
+      if (docModalOverlay) return;
+
+      docModalOverlay = document.createElement('div');
+      docModalOverlay.className = 'teacher-modal-overlay doc-modal-overlay';
+      docModalOverlay.id = 'docModalOverlay';
+      docModalOverlay.innerHTML = `
+        <div class="teacher-modal doc-modal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle">
+          <button type="button" class="teacher-modal-close" aria-label="Cerrar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          <h3 id="docModalTitle">Documento</h3>
+          <div class="doc-modal-viewer">
+            <iframe id="docModalFrame" title="Vista previa del documento PDF" src=""></iframe>
+          </div>
+          <div class="doc-modal-actions">
+            <a id="docModalDownload" class="btn btn-primary" href="#" download>Descargar PDF</a>
+          </div>
+        </div>`;
+      document.body.appendChild(docModalOverlay);
+
+      docModalTitle = document.getElementById('docModalTitle');
+      docModalFrame = document.getElementById('docModalFrame');
+      docModalDownload = document.getElementById('docModalDownload');
+      docModalClose = docModalOverlay.querySelector('.teacher-modal-close');
+
+      docModalClose.addEventListener('click', closeDocModal);
+      docModalOverlay.addEventListener('click', (e) => { if (e.target === docModalOverlay) closeDocModal(); });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && docModalOverlay.classList.contains('open')) closeDocModal();
+      });
+    }
+
+    function openDocModal(href, title) {
+      buildDocModal();
+      docModalTitle.textContent = title;
+      docModalFrame.src = href;
+      docModalDownload.setAttribute('href', href);
+      docModalDownload.setAttribute('download', '');
+      docModalOverlay.classList.add('open');
+    }
+
+    function closeDocModal() {
+      if (!docModalOverlay) return;
+      docModalOverlay.classList.remove('open');
+      // Detiene la carga del PDF al cerrar (evita audio/descargas en segundo plano)
+      docModalFrame.src = '';
+    }
+
+    docModalLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const match = matchDocModalFile(link.getAttribute('href'));
+        if (!match) return;
+        e.preventDefault();
+        openDocModal(link.getAttribute('href'), match.title);
+      });
+    });
+  }
+} catch (err) {
+  console.error('[main.js] Error en visor de documentos PDF:', err);
+}
+
+/* =========================================================
+   NOTICIA INSTITUCIONAL DESTACADA
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const modal = document.getElementById("institutionalNews");
+  const backdrop = document.getElementById("institutionalNewsBackdrop");
+  const closeButton = document.getElementById("institutionalNewsClose");
+  const laterButton = document.getElementById("institutionalNewsLater");
+
+  if (!modal) {
+    return;
+  }
+
+  let lastFocusedElement = null;
+
+  /* -------------------------------------------------------
+     ABRIR
+  ------------------------------------------------------- */
+
+  function openNews() {
+
+    lastFocusedElement = document.activeElement;
+
+    modal.classList.add("is-open");
+
+    modal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+    document.body.classList.add(
+      "institutional-news-open"
+    );
+
+    /* Enfocar botón cerrar */
+    setTimeout(function () {
+
+      if (closeButton) {
+        closeButton.focus();
+      }
+
+    }, 100);
+  }
+
+
+  /* -------------------------------------------------------
+     CERRAR
+  ------------------------------------------------------- */
+
+  function closeNews() {
+
+    modal.classList.remove("is-open");
+
+    modal.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+    document.body.classList.remove(
+      "institutional-news-open"
+    );
+
+    /* Devolver foco al elemento anterior */
+    if (
+      lastFocusedElement &&
+      typeof lastFocusedElement.focus === "function"
+    ) {
+
+      lastFocusedElement.focus();
+
+    }
+  }
+
+
+  /* -------------------------------------------------------
+     MOSTRAR DESPUÉS DE CARGAR
+  ------------------------------------------------------- */
+
+  setTimeout(function () {
+
+    openNews();
+
+  }, 900);
+
+
+  /* -------------------------------------------------------
+     BOTÓN X
+  ------------------------------------------------------- */
+
+  if (closeButton) {
+
+    closeButton.addEventListener(
+      "click",
+      closeNews
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     BOTÓN CERRAR
+  ------------------------------------------------------- */
+
+  if (laterButton) {
+
+    laterButton.addEventListener(
+      "click",
+      closeNews
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     CLIC EN EL FONDO
+  ------------------------------------------------------- */
+
+  if (backdrop) {
+
+    backdrop.addEventListener(
+      "click",
+      closeNews
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     TECLA ESC
+  ------------------------------------------------------- */
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Escape" &&
+        modal.classList.contains("is-open")
+      ) {
+
+        closeNews();
+
+      }
+
+    }
+  );
+
+});

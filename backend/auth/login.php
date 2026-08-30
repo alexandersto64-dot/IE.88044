@@ -11,7 +11,21 @@ require_once "../config/database.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
-    header("Location: ../../index.html");
+    header("Location: ../../login.html");
+    exit;
+
+}
+
+
+// ==========================================
+// Helper: volver al login mostrando un mensaje
+// de error claro y visible (sin exponer detalles
+// internos ni contraseñas).
+// ==========================================
+
+function volverConError($mensaje) {
+
+    header("Location: ../../login.html?error=" . urlencode($mensaje));
     exit;
 
 }
@@ -27,7 +41,7 @@ $password = $_POST["password"] ?? "";
 
 if ($correo === "" || $password === "") {
 
-    die("Debe completar todos los campos.");
+    volverConError("Debe completar todos los campos.");
 
 }
 
@@ -71,7 +85,7 @@ $usuario = $stmt->fetch();
 
 if (!$usuario) {
 
-    die("Correo o contraseña incorrectos.");
+    volverConError("Correo o contraseña incorrectos.");
 
 }
 
@@ -82,7 +96,7 @@ if (!$usuario) {
 
 if ($usuario["estado"] !== "ACTIVO") {
 
-    die("El usuario se encuentra inactivo.");
+    volverConError("El usuario se encuentra inactivo.");
 
 }
 
@@ -93,7 +107,7 @@ if ($usuario["estado"] !== "ACTIVO") {
 
 if (!password_verify($password, $usuario["password"])) {
 
-    die("Correo o contraseña incorrectos.");
+    volverConError("Correo o contraseña incorrectos.");
 
 }
 
@@ -115,6 +129,31 @@ $_SESSION["correo"] = $usuario["correo"];
 $_SESSION["rol"] = $usuario["rol"];
 
 $_SESSION["id_rol"] = $usuario["id_rol"];
+
+
+// ==========================================
+// "RECORDARME": si el usuario marcó la casilla,
+// la cookie de sesión dura 30 días en vez de
+// cerrarse al salir del navegador. No afecta la
+// validación del correo/contraseña, solo cuánto
+// dura la sesión ya autenticada.
+// ==========================================
+
+if (!empty($_POST["recordar"])) {
+
+    $params = session_get_cookie_params();
+
+    setcookie(
+        session_name(),
+        session_id(),
+        time() + (30 * 24 * 60 * 60),
+        $params["path"],
+        $params["domain"],
+        $params["secure"],
+        $params["httponly"]
+    );
+
+}
 
 
 // ==========================================
@@ -174,6 +213,6 @@ switch (strtoupper(trim($usuario["rol"]))) {
 
         session_destroy();
 
-        die("Rol de usuario no válido.");
+        volverConError("Rol de usuario no válido.");
 
 }

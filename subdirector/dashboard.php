@@ -9,7 +9,7 @@ session_start();
 
 if (!isset($_SESSION["id_usuario"])) {
 
-    header("Location: ../index.html");
+    header("Location: ../login.html");
     exit;
 
 }
@@ -39,15 +39,18 @@ require_once "../backend/config/database.php";
 
 $sql = "
     SELECT
-        id_usuario,
-        nombres,
-        apellidos,
-        correo,
-        rol
+        u.id_usuario,
+        u.nombres,
+        u.apellidos,
+        u.correo,
+        r.nombre AS rol
 
-    FROM usuarios
+    FROM usuarios u
 
-    WHERE id_usuario = ?
+    INNER JOIN roles r
+        ON u.id_rol = r.id_rol
+
+    WHERE u.id_usuario = ?
 ";
 
 $stmt = $conexion->prepare($sql);
@@ -69,6 +72,36 @@ if (!$usuario) {
 
 }
 
+
+// ==========================================
+// 6. RESUMEN DE TRABAJOS ENVIADOS POR PROFESORES
+// (datos reales de envios_trabajo; no se inventan cifras)
+// ==========================================
+
+$resumenEnvios = $conexion->query("
+    SELECT
+        SUM(estado IN ('ENVIADO', 'EN_REVISION', 'CORREGIDO')) AS pendientes,
+        SUM(estado = 'REQUIERE_CAMBIOS') AS requieren_cambios,
+        SUM(estado = 'APROBADO') AS aprobados,
+        COUNT(*) AS total
+    FROM envios_trabajo
+")->fetch();
+
+$ultimosPendientes = $conexion->query("
+    SELECT
+        e.id_envio, e.titulo, e.estado,
+        u.nombres, u.apellidos,
+        h.creado_en AS fecha_version
+    FROM envios_trabajo e
+    INNER JOIN profesores p ON p.id_profesor = e.id_profesor
+    INNER JOIN usuarios u ON u.id_usuario = p.id_usuario
+    INNER JOIN envios_trabajo_historial h
+        ON h.id_envio = e.id_envio AND h.version = e.version_actual
+    WHERE e.estado IN ('ENVIADO', 'EN_REVISION', 'CORREGIDO')
+    ORDER BY h.creado_en DESC
+    LIMIT 5
+")->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -85,18 +118,21 @@ if (!$usuario) {
     >
 
     <title>
-        Subdirector - IE 88044
+        Subdirector - I.E.P. 88044 Abraham Valdelomar
     </title>
 
-    <link
-        rel="stylesheet"
-        href="../css/dashboard.css"
-    >
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
 
 </head>
 
 
 <body>
+
+<div class="app-shell">
+<?php $currentFile = basename(__FILE__); include __DIR__ . "/../backend/partials/sidebar.php"; ?>
+<div class="app-content">
+
 
 
 <header>
@@ -175,6 +211,57 @@ if (!$usuario) {
     </section>
 
 
+    <h2>
+        Supervisión académica
+    </h2>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value"><?= (int) ($resumenEnvios["pendientes"] ?? 0) ?></span>
+            <span class="stat-label">Pendientes de revisión</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= (int) ($resumenEnvios["requieren_cambios"] ?? 0) ?></span>
+            <span class="stat-label">Requieren cambios</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= (int) ($resumenEnvios["aprobados"] ?? 0) ?></span>
+            <span class="stat-label">Aprobados</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value"><?= (int) ($resumenEnvios["total"] ?? 0) ?></span>
+            <span class="stat-label">Total de envíos</span>
+        </div>
+    </div>
+
+    <section>
+        <h3>Pendientes de revisión</h3>
+
+        <?php if (count($ultimosPendientes) === 0): ?>
+            <p class="placeholder-text">No hay trabajos pendientes de revisión.</p>
+        <?php else: ?>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Profesor</th><th>Trabajo</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($ultimosPendientes as $p): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($p["nombres"] . " " . $p["apellidos"]) ?></td>
+                                <td><?= htmlspecialchars($p["titulo"]) ?></td>
+                                <td><?= htmlspecialchars($p["fecha_version"]) ?></td>
+                                <td><span class="status-badge status-<?= strtolower($p["estado"]) ?>"><?= htmlspecialchars($p["estado"]) ?></span></td>
+                                <td><a href="revision.php" class="btn-mini">Revisar</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <p><a href="revision.php">Ver todos los trabajos enviados &rarr;</a></p>
+        <?php endif; ?>
+    </section>
+
 
     <h2>
         Gestión institucional
@@ -182,6 +269,25 @@ if (!$usuario) {
 
 
     <div class="cards">
+
+
+        <div class="card">
+
+            <h3>
+                🎓 Alumnos
+            </h3>
+
+            <p>
+                Consultar alumnos
+                matriculados.
+            </p>
+
+            <a href="alumnos.php">
+                Ver alumnos
+            </a>
+
+        </div>
+
 
 
         <div class="card">
@@ -195,8 +301,28 @@ if (!$usuario) {
                 documentos institucionales.
             </p>
 
-            <a href="#">
+            <a href="documentos.php">
                 Ver documentos
+            </a>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h3>
+                📝 Revisión de trabajos
+            </h3>
+
+            <p>
+                Revisar los trabajos enviados
+                por los profesores, aprobar o
+                solicitar correcciones.
+            </p>
+
+            <a href="revision.php">
+                Ir a revisión
             </a>
 
         </div>
@@ -214,7 +340,7 @@ if (!$usuario) {
                 solicitudes de los usuarios.
             </p>
 
-            <a href="#">
+            <a href="solicitudes.php">
                 Ver solicitudes
             </a>
 
@@ -233,7 +359,7 @@ if (!$usuario) {
                 del personal docente.
             </p>
 
-            <a href="#">
+            <a href="profesores.php">
                 Ver profesores
             </a>
 
@@ -252,7 +378,7 @@ if (!$usuario) {
                 institucionales.
             </p>
 
-            <a href="#">
+            <a href="reportes.php">
                 Ver reportes
             </a>
 
@@ -271,7 +397,7 @@ if (!$usuario) {
                 institucionales.
             </p>
 
-            <a href="#">
+            <a href="comunicados.php">
                 Ver comunicados
             </a>
 
@@ -290,7 +416,7 @@ if (!$usuario) {
                 académicos registrados.
             </p>
 
-            <a href="#">
+            <a href="periodos.php">
                 Ver periodos
             </a>
 
@@ -301,6 +427,11 @@ if (!$usuario) {
 
 </main>
 
+
+</div><!-- /.app-content -->
+</div><!-- /.app-shell -->
+
+<script src="../js/panel.js"></script>
 
 </body>
 
