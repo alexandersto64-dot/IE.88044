@@ -2031,6 +2031,34 @@ a.info-card{ display:block; }
   .staff-photo-grid{ grid-template-columns: 1fr; }
 }
 
+/* Modal de docente de Secundaria por área: reutiliza .schedule-modal /
+   .schedule-table para mantener el mismo lenguaje visual; solo se añade
+   el estilo de las secciones internas (Horario / Atención PP.FF / Secciones). */
+.docente-modal .docente-modal-section{ margin-top: 20px; }
+.docente-modal .docente-modal-section h4{
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--ocean-deep);
+  margin-bottom: 8px;
+}
+.docente-modal-secciones{
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:0;
+  margin:0;
+}
+.docente-modal-secciones li{
+  background: var(--sand);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  font-weight:600;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
 /* ============ MODAL DE DOCUMENTOS PDF (FUT / Reglamento Interno) ============ */
 /* Reutiliza .teacher-modal-overlay / .teacher-modal / .teacher-modal-close
    (ver más arriba) para mantener el mismo lenguaje visual que los demás
@@ -3536,4 +3564,51 @@ body.institutional-news-open {
     transition: none;
   }
 
+}
+/* =========================================================
+   MISIÓN Y VISIÓN — IMÁGENES GRANDES Y DESTACADAS
+   Escopado a las páginas mision.html y vision.html mediante
+   las clases del <body> para no afectar el resto del sitio.
+========================================================= */
+
+/* Ampliamos el ancho del contenedor "narrow" solo en estas
+   dos páginas, para permitir una imagen mucho más grande. */
+body.page-mision .container.narrow,
+body.page-vision .container.narrow {
+  max-width: 1400px;
+}
+
+.mission-image-card,
+.vision-image-card {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.mission-image,
+.vision-image {
+  display: block;
+  width: 100%;
+  max-width: 1400px;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 768px) {
+  .mission-image-card,
+  .vision-image-card {
+    padding: 20px 10px;
+  }
+
+  .mission-image,
+  .vision-image {
+    width: 100%;
+    border-radius: 12px;
+  }
 }

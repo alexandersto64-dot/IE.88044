@@ -73,6 +73,10 @@ $menus = [
         "titulo" => "Profesor",
         "items" => [
             ["label" => "Mi panel", "icon" => "🏠", "href" => "dashboard.php"],
+            ["label" => "PCA", "icon" => "📘", "href" => "pca.php"],
+            ["label" => "Unidades", "icon" => "🗂️", "href" => "unidades.php"],
+            ["label" => "Sesiones", "icon" => "📝", "href" => "sesiones.php"],
+            ["label" => "Documentos Institucionales", "icon" => "📄", "href" => "documentos.php"],
         ],
     ],
 

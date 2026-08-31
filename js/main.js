@@ -479,7 +479,8 @@ const SEARCH_INDEX = [
   { title: 'Preescolar', url: 'preescolar.html', category: 'Niveles', keywords: 'preescolar inicial niños jardín', snippet: 'Información del nivel Preescolar.' },
   { title: 'Primaria', url: 'primaria.html', category: 'Niveles', keywords: 'primaria estudiantes grados', snippet: 'Información del nivel Primaria.' },
   { title: 'Padres de Familia', url: 'padres.html', category: 'Comunidad', keywords: 'padres familia matrícula calendario preguntas frecuentes faq comunicación', snippet: 'Matrícula, calendario y preguntas frecuentes.' },
-  { title: 'Docentes', url: 'docentes.html', category: 'Comunidad', keywords: 'docentes profesores maestros equipo personal aula innovación pedagógica', snippet: 'Equipo docente y administrativo.' },
+  { title: 'Docentes de Primaria', url: 'docentes-primaria.html', category: 'Comunidad', keywords: 'docentes profesores maestros primaria equipo personal aula innovación pedagógica', snippet: 'Equipo docente de Primaria por área.' },
+  { title: 'Docentes de Secundaria', url: 'docentes-secundaria.html', category: 'Comunidad', keywords: 'docentes profesores maestros secundaria equipo personal aula innovación pedagógica', snippet: 'Equipo docente de Secundaria por área.' },
   { title: 'Noticias', url: 'noticias.html', category: 'Más', keywords: 'noticias comunicados eventos calendario próximos', snippet: 'Comunicados y próximos eventos del colegio.' },
   { title: 'Contacto', url: 'contacto.html', category: 'Más', keywords: 'contacto dirección ubicación teléfono correo mapa formulario', snippet: 'Formulario, dirección y ubicación del colegio.' },
 ];
@@ -752,6 +753,127 @@ try {
   }
 } catch (err) {
   console.error('[main.js] Error en modal de horario por docente:', err);
+}
+
+// ============ DOCENTES DE PRIMARIA POR ÁREA (filtro) ============
+// Mismo patrón que el filtro de Secundaria, aplicado a
+// #areaDocentesGridPrimaria / data-area-primaria.
+try {
+  const areaFilterBtnsPrimaria = document.querySelectorAll('#areaFiltersPrimaria .events-filter-btn');
+  const areaCardsPrimaria = document.querySelectorAll('#areaDocentesGridPrimaria .staff-photo-card');
+  const areaEmptyMsgPrimaria = document.getElementById('areaEmptyMsgPrimaria');
+
+  if (areaFilterBtnsPrimaria.length && areaCardsPrimaria.length) {
+    areaFilterBtnsPrimaria.forEach(btn => {
+      btn.addEventListener('click', () => {
+        areaFilterBtnsPrimaria.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const area = btn.dataset.areaPrimaria;
+        let anyVisible = false;
+        areaCardsPrimaria.forEach(card => {
+          const show = area === 'todas' || card.dataset.areaPrimaria === area;
+          card.style.display = show ? '' : 'none';
+          if (show) anyVisible = true;
+        });
+        if (areaEmptyMsgPrimaria) areaEmptyMsgPrimaria.hidden = anyVisible;
+      });
+    });
+  }
+} catch (err) {
+  console.error('[main.js] Error en filtro de docentes de Primaria por área:', err);
+}
+
+// ============ DOCENTES DE SECUNDARIA POR ÁREA (filtro) ============
+// Filtra las tarjetas de #areaDocentesGrid según el botón de área activo
+// (reutiliza el estilo de .events-filter-btn). Si el área elegida no
+// tiene ninguna tarjeta, se muestra el aviso #areaEmptyMsg en vez de
+// inventar un docente.
+try {
+  const areaFilterBtns = document.querySelectorAll('#areaFilters .events-filter-btn');
+  const areaCards = document.querySelectorAll('#areaDocentesGrid .staff-photo-card');
+  const areaEmptyMsg = document.getElementById('areaEmptyMsg');
+
+  if (areaFilterBtns.length && areaCards.length) {
+    areaFilterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        areaFilterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const area = btn.dataset.area;
+        let anyVisible = false;
+        areaCards.forEach(card => {
+          const show = area === 'todas' || card.dataset.area === area;
+          card.style.display = show ? '' : 'none';
+          if (show) anyVisible = true;
+        });
+        if (areaEmptyMsg) areaEmptyMsg.hidden = anyVisible;
+      });
+    });
+  }
+} catch (err) {
+  console.error('[main.js] Error en filtro de docentes de Secundaria por área:', err);
+}
+
+// ============ MODAL DE DOCENTE DE SECUNDARIA POR ÁREA ============
+// Cada botón ".docente-modal-btn" trae en atributos data-*:
+//   data-teacher-name, data-teacher-role -> encabezado del modal
+//   data-horario    -> JSON: [{"dia":"","hora":"","curso":""}]  (Horario de Clases)
+//   data-ppff       -> texto de Atención PP.FF (opcional)
+//   data-secciones  -> JSON: ["Grado – Sección", ...]           (Secciones a Cargo)
+// El modal se reutiliza para todos los docentes de la página: su
+// contenido se reemplaza por completo en cada apertura.
+try {
+  const docenteButtons = document.querySelectorAll('.docente-modal-btn');
+  const docenteModalOverlay = document.getElementById('docenteModalOverlay');
+
+  if (docenteButtons.length && docenteModalOverlay) {
+    const docenteModalName = document.getElementById('docenteModalName');
+    const docenteModalRole = document.getElementById('docenteModalRole');
+    const docenteModalHorario = document.getElementById('docenteModalHorario');
+    const docenteModalPPFF = document.getElementById('docenteModalPPFF');
+    const docenteModalSecciones = document.getElementById('docenteModalSecciones');
+    const docenteModalClose = docenteModalOverlay.querySelector('.teacher-modal-close');
+
+    function openDocenteModal(btn) {
+      docenteModalName.textContent = btn.dataset.teacherName || '';
+      docenteModalRole.textContent = btn.dataset.teacherRole || '';
+
+      let horario = [];
+      try { horario = JSON.parse(btn.dataset.horario || '[]'); } catch (e) { horario = []; }
+      docenteModalHorario.innerHTML = horario.length
+        ? horario.map(r => `<tr><td>${r.dia || ''}</td><td>${r.hora || ''}</td><td>${r.curso || ''}</td></tr>`).join('')
+        : `<tr><td colspan="3" class="placeholder-text">Información pendiente de registrar.</td></tr>`;
+
+      const ppff = (btn.dataset.ppff || '').trim();
+      docenteModalPPFF.textContent = ppff || 'Información pendiente de registrar.';
+
+      let secciones = [];
+      try { secciones = JSON.parse(btn.dataset.secciones || '[]'); } catch (e) { secciones = []; }
+      docenteModalSecciones.innerHTML = secciones.length
+        ? secciones.map(s => `<li>${s}</li>`).join('')
+        : '<li class="placeholder-text">Información pendiente de registrar.</li>';
+
+      docenteModalOverlay.classList.add('open');
+    }
+
+    function closeDocenteModal() { docenteModalOverlay.classList.remove('open'); }
+
+    docenteButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDocenteModal(btn);
+      });
+    });
+
+    docenteModalClose?.addEventListener('click', closeDocenteModal);
+    docenteModalOverlay.addEventListener('click', (e) => { if (e.target === docenteModalOverlay) closeDocenteModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && docenteModalOverlay.classList.contains('open')) closeDocenteModal();
+    });
+  }
+} catch (err) {
+  console.error('[main.js] Error en modal de docente de Secundaria por área:', err);
 }
 
 // ============ VISOR DE DOCUMENTOS PDF (modal reutilizable) ============

@@ -536,6 +536,42 @@ if (isset($_GET["ver_notificaciones"])) {
 <main>
 
 
+    <!-- ==================================================
+         MENÚ PRINCIPAL DEL PROFESOR
+    ================================================== -->
+
+    <section>
+
+        <h2>
+            Organizar y subir documentos
+        </h2>
+
+        <div class="cards">
+            <div class="card">
+                <h3>📘 PCA</h3>
+                <p>Sube el archivo del PCA de cada unidad (U1–U8).</p>
+                <a href="pca.php">Abrir PCA</a>
+            </div>
+            <div class="card">
+                <h3>🗂️ Unidades</h3>
+                <p>Unidad → Semana → Sem-01 → 11 cursos, con subida de archivos.</p>
+                <a href="unidades.php">Abrir Unidades</a>
+            </div>
+            <div class="card">
+                <h3>📝 Sesiones</h3>
+                <p>Unidad → Semana → Sem-01 → 11 cursos, con subida de archivos.</p>
+                <a href="sesiones.php">Abrir Sesiones</a>
+            </div>
+            <div class="card">
+                <h3>📄 Documentos Institucionales</h3>
+                <p>Estructura preparada para 3 categorías (por definir).</p>
+                <a href="documentos.php">Abrir Documentos</a>
+            </div>
+        </div>
+
+    </section>
+
+
     <!-- INFORMACIÓN DEL PROFESOR -->
 
     <section class="profile-card">
