@@ -19,7 +19,7 @@ if (!isset($_SESSION["id_usuario"])) {
 // 2. COMPROBAR QUE SEA PROFESOR
 // ==================================================
 
-if ($_SESSION["rol"] !== "PROFESOR") {
+if (!in_array($_SESSION["rol"], ["PROFESOR", "PROFESOR_PRIMARIA", "PROFESOR_SECUNDARIO"], true)) {
 
     die("Acceso no autorizado.");
 
@@ -35,6 +35,7 @@ require_once "../backend/config/seguridad_csrf.php";
 require_once "../backend/config/notificaciones.php";
 require_once "../backend/config/subida_archivos.php";
 require_once "../backend/config/flash.php";
+require_once "../backend/config/profesor_grados.php";
 
 // ==================================================
 // 4. OBTENER LOS DATOS DEL PROFESOR
@@ -457,6 +458,12 @@ $misEnvios = $conexion->prepare("
 $misEnvios->execute([$profesor["id_profesor"]]);
 $misEnvios = $misEnvios->fetchAll();
 
+// ==================================================
+// 7.1 GRADOS (NIVEL + GRADO) ASIGNADOS AL PROFESOR
+// ==================================================
+
+$gradosAsignados = profesor_grados_asignados($conexion, $profesor["id_profesor"]);
+
 $notificacionesProfesor = notificaciones_listar($conexion, $_SESSION["id_usuario"], 5);
 $notificacionesNoLeidas = notificaciones_no_leidas($conexion, $_SESSION["id_usuario"]);
 
@@ -508,7 +515,7 @@ if (isset($_GET["ver_notificaciones"])) {
 <header>
 
     <h1>
-        Panel del Profesor
+        🏠 Panel del Profesor
     </h1>
 
     <p>
@@ -543,31 +550,52 @@ if (isset($_GET["ver_notificaciones"])) {
     <section>
 
         <h2>
-            Organizar y subir documentos
+            Grados asignados
         </h2>
 
-        <div class="cards">
-            <div class="card">
-                <h3>📘 PCA</h3>
-                <p>Sube el archivo del PCA de cada unidad (U1–U8).</p>
-                <a href="pca.php">Abrir PCA</a>
+        <?php if (count($gradosAsignados) === 0): ?>
+
+            <div class="empty-state">
+                <span class="empty-state-icon" aria-hidden="true">🎒</span>
+                <h2>Todavía no tienes grados asignados</h2>
+                <p>
+                    Pide al administrador que te asigne un aula desde «Gestionar profesores»
+                    para poder organizar tu PCA, Unidades, Sesiones y Documentos Institucionales.
+                </p>
             </div>
-            <div class="card">
-                <h3>🗂️ Unidades</h3>
-                <p>Unidad → Semana → Sem-01 → 11 cursos, con subida de archivos.</p>
-                <a href="unidades.php">Abrir Unidades</a>
+
+        <?php else: ?>
+
+            <p class="placeholder-text" style="margin-bottom:16px;">
+                Selecciona un grado para organizar su PCA, Unidades, Sesiones y
+                Documentos Institucionales.
+            </p>
+
+            <div class="cards-grados">
+                <?php foreach ($gradosAsignados as $ng): ?>
+                    <div class="card">
+                        <h3><?= htmlspecialchars(strtoupper($ng["nombre"])) ?> <?= htmlspecialchars(strtoupper(ucfirst(strtolower($ng["nivel"])))) ?></h3>
+
+                        <?php if (count($ng["cursos"]) === 0): ?>
+                            <p class="placeholder-text">Sin curso asignado todavía.</p>
+                        <?php else: ?>
+                            <p>
+                                <?= htmlspecialchars(implode(", ", array_map(fn($c) => $c["nombre"], $ng["cursos"]))) ?>
+                            </p>
+                        <?php endif; ?>
+
+                        <p class="placeholder-text">
+                            <?= count($ng["secciones"]) ?> <?= count($ng["secciones"]) === 1 ? "sección" : "secciones" ?>
+                        </p>
+
+                        <a href="grado.php?id_nivel_grado=<?= (int) $ng["id_nivel_grado"] ?>">
+                            Ingresar
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
-            <div class="card">
-                <h3>📝 Sesiones</h3>
-                <p>Unidad → Semana → Sem-01 → 11 cursos, con subida de archivos.</p>
-                <a href="sesiones.php">Abrir Sesiones</a>
-            </div>
-            <div class="card">
-                <h3>📄 Documentos Institucionales</h3>
-                <p>Estructura preparada para 3 categorías (por definir).</p>
-                <a href="documentos.php">Abrir Documentos</a>
-            </div>
-        </div>
+
+        <?php endif; ?>
 
     </section>
 
@@ -939,9 +967,11 @@ if (isset($_GET["ver_notificaciones"])) {
 
         <?php if (count($trabajos) === 0): ?>
 
-            <p>
-                No tienes trabajos registrados.
-            </p>
+            <div class="empty-state">
+                <span class="empty-state-icon" aria-hidden="true">📋</span>
+                <h2>No tienes trabajos registrados</h2>
+                <p>Usa el formulario de arriba para crear tu primer trabajo.</p>
+            </div>
 
 
         <?php else: ?>

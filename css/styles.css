@@ -3586,6 +3586,10 @@ body.page-vision .container.narrow {
   padding: 40px 20px;
   display: flex;
   justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .mission-image,

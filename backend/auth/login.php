@@ -201,6 +201,8 @@ switch (strtoupper(trim($usuario["rol"]))) {
 
 
     case "PROFESOR":
+    case "PROFESOR_PRIMARIA":
+    case "PROFESOR_SECUNDARIO":
 
         header(
             "Location: ../../profesor/dashboard.php"

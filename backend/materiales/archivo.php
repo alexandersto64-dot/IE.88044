@@ -19,7 +19,7 @@ if (!isset($_SESSION["id_usuario"])) {
     die("No autorizado.");
 }
 
-if ($_SESSION["rol"] !== "PROFESOR") {
+if (!in_array($_SESSION["rol"], ["PROFESOR", "PROFESOR_PRIMARIA", "PROFESOR_SECUNDARIO"], true)) {
     http_response_code(403);
     die("Acceso no autorizado.");
 }

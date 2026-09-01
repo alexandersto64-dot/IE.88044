@@ -14,6 +14,14 @@
 
 $rolActual = $_SESSION["rol"] ?? "";
 
+// Los 3 roles de profesor (el genérico "PROFESOR" y los específicos
+// "PROFESOR_PRIMARIA"/"PROFESOR_SECUNDARIO" agregados en la
+// migración de niveles) comparten el mismo menú del Dashboard del
+// Profesor: la separación primaria/secundaria ya la hace el propio
+// contenido (grados asignados), no el menú.
+$esRolProfesor = in_array($rolActual, ["PROFESOR", "PROFESOR_PRIMARIA", "PROFESOR_SECUNDARIO"], true);
+$rolMenu = $esRolProfesor ? "PROFESOR" : $rolActual;
+
 $notifNoLeidas = 0;
 
 if (isset($conexion) && isset($_SESSION["id_usuario"])) {
@@ -28,12 +36,22 @@ if (isset($conexion) && isset($_SESSION["id_usuario"])) {
 
 // Página a la que debe apuntar el contador: solo enlazamos a una
 // vista que realmente exista y liste las notificaciones del rol.
-// Por ahora solo PROFESOR tiene una sección de notificaciones
+// Por ahora solo el Profesor tiene una sección de notificaciones
 // (profesor/dashboard.php). Para ADMIN/SUBDIRECTOR el contador
 // mostrará la cifra real (hoy siempre 0, porque el sistema aún no
 // genera notificaciones dirigidas a esos roles), pero sin enlace,
 // para no inventar una página de notificaciones que no existe.
-$notifHref = $rolActual === "PROFESOR" ? "dashboard.php" : null;
+$notifHref = $esRolProfesor ? "dashboard.php" : null;
+
+// PCA/Unidades/Sesiones/Documentos ahora son por nivel+grado: si la
+// página que incluye este sidebar ya tiene un grado en contexto
+// (definido como $idNivelGradoSidebar antes del include), los
+// enlaces del menú lo conservan; si no hay ninguno seleccionado
+// todavía (p.ej. parado en "Mi panel"), esos enlaces llevan de
+// vuelta al panel para elegir un grado primero.
+$sufijoGrado = isset($idNivelGradoSidebar) && (int) $idNivelGradoSidebar > 0
+    ? "?id_nivel_grado=" . (int) $idNivelGradoSidebar
+    : null;
 
 $menus = [
 
@@ -73,16 +91,29 @@ $menus = [
         "titulo" => "Profesor",
         "items" => [
             ["label" => "Mi panel", "icon" => "🏠", "href" => "dashboard.php"],
-            ["label" => "PCA", "icon" => "📘", "href" => "pca.php"],
-            ["label" => "Unidades", "icon" => "🗂️", "href" => "unidades.php"],
-            ["label" => "Sesiones", "icon" => "📝", "href" => "sesiones.php"],
-            ["label" => "Documentos Institucionales", "icon" => "📄", "href" => "documentos.php"],
+            ["label" => "PCA", "icon" => "📘", "href" => "pca.php" . ($sufijoGrado ?? ""), "requiereGrado" => true],
+            ["label" => "Unidades", "icon" => "🗂️", "href" => "unidades.php" . ($sufijoGrado ?? ""), "requiereGrado" => true],
+            ["label" => "Sesiones", "icon" => "📝", "href" => "sesiones.php" . ($sufijoGrado ?? ""), "requiereGrado" => true],
+            ["label" => "Documentos Institucionales", "icon" => "📄", "href" => "documentos.php" . ($sufijoGrado ?? ""), "requiereGrado" => true],
         ],
     ],
 
 ];
 
-$menu = $menus[$rolActual] ?? ["titulo" => "Panel", "items" => []];
+// Si el menú es el de Profesor y todavía no hay un grado en
+// contexto, los ítems que lo requieren apuntan a "Mi panel" (donde
+// se elige el grado) en vez de a una página que rechazaría el
+// acceso por no traer id_nivel_grado.
+if ($rolMenu === "PROFESOR" && !$sufijoGrado) {
+    foreach ($menus["PROFESOR"]["items"] as &$item) {
+        if (!empty($item["requiereGrado"])) {
+            $item["href"] = "dashboard.php";
+        }
+    }
+    unset($item);
+}
+
+$menu = $menus[$rolMenu] ?? ["titulo" => "Panel", "items" => []];
 
 ?>
 <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
@@ -97,6 +128,13 @@ $menu = $menus[$rolActual] ?? ["titulo" => "Panel", "items" => []];
             <span><?= htmlspecialchars($menu["titulo"]) ?></span>
         </div>
     </div>
+
+    <?php if (isset($etiqueta) && isset($idNivelGradoSidebar) && (int) $idNivelGradoSidebar > 0): ?>
+        <div class="sidebar-context" title="Grado actual">
+            <span class="nav-icon">🎒</span>
+            <span><?= htmlspecialchars($etiqueta) ?></span>
+        </div>
+    <?php endif; ?>
 
     <?php if ($notifHref): ?>
         <a href="<?= htmlspecialchars($notifHref) ?>" class="sidebar-notif<?= $notifNoLeidas > 0 ? " has-unread" : "" ?>">
@@ -145,7 +183,8 @@ $menu = $menus[$rolActual] ?? ["titulo" => "Panel", "items" => []];
 
             <?php else: ?>
 
-                <a href="<?= htmlspecialchars($item["href"]) ?>" class="nav-link<?= $item["href"] === $currentFile ? " active" : "" ?>">
+                <?php $hrefBase = strtok($item["href"], "?"); ?>
+                <a href="<?= htmlspecialchars($item["href"]) ?>" class="nav-link<?= $hrefBase === $currentFile ? " active" : "" ?>">
                     <span class="nav-icon"><?= $item["icon"] ?></span>
                     <span><?= htmlspecialchars($item["label"]) ?></span>
                 </a>

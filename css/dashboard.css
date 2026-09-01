@@ -81,7 +81,7 @@ body{
   transition: background .15s ease, color .15s ease;
 }
 .nav-link:hover{ background: rgba(255,255,255,.1); color: var(--white); }
-.nav-link.active{ background: var(--white); color: var(--ocean-deep); }
+.nav-link.active{ background: var(--white); color: var(--ocean-deep); box-shadow: inset 3px 0 0 var(--ocean-mid); }
 .nav-icon{ font-size:1rem; width:20px; text-align:center; flex-shrink:0; }
 .nav-caret{ margin-left:auto; font-size:.75rem; transition: transform .2s ease; }
 .nav-parent.open > .nav-parent-toggle .nav-caret{ transform: rotate(180deg); }
@@ -131,6 +131,24 @@ a.sidebar-notif:hover{ background: rgba(255,255,255,.12); color: var(--white); }
   align-items:center;
   justify-content:center;
   padding: 0 6px;
+}
+
+/* Contexto de grado actual (nivel + grado), mostrado debajo de la
+   marca cuando la página que incluye el sidebar ya tiene un grado
+   seleccionado ($etiqueta + $idNivelGradoSidebar > 0). Puramente
+   informativo, no es un enlace. */
+.sidebar-context{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin: 0 12px 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight:700;
+  color: var(--white);
+  background: rgba(255,255,255,.1);
+  border: 1px dashed rgba(255,255,255,.25);
 }
 
 .sidebar-logout{
@@ -274,6 +292,18 @@ main > h2:first-of-type{ margin-top: 0; }
 .cards{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* ============ GRADOS ASIGNADOS (Dashboard Profesor) ============
+   Contenedor propio (no reutiliza .cards) para que el número de
+   columnas se adapte solo a la cantidad real de grados del
+   profesor (1, 2, 3, 4 o 5), sin dejar columnas vacías cuando hay
+   menos de 3 tarjetas ni afectar la grilla fija de .cards que usan
+   otras pantallas (admin/subdirector, módulos de grado.php, etc.). */
+.cards-grados{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 18px;
 }
 .card{
@@ -598,9 +628,11 @@ main > section > p:only-child{
   .stats-grid{ grid-template-columns: 1fr; }
   main{ padding-left: 16px; padding-right: 16px; }
   .row-actions{ gap: 6px; }
+  .breadcrumbs{ font-size: var(--text-xs); gap: 6px; }
+  .badge-nivel-grado, .badge-curso-actual{ font-size: 10px; padding: 3px 10px; }
 }
 
-/* ============ MIGAS DE PAN (PCA / Unidades del profesor) ============ */
+/* ============ MIGAS DE PAN (todo el módulo Profesor) ============ */
 .breadcrumbs{
   display:flex;
   align-items:center;
@@ -608,11 +640,65 @@ main > section > p:only-child{
   gap: 8px;
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 .breadcrumbs a{ color: var(--ocean-deep); font-weight: 600; }
 .breadcrumbs a:hover{ text-decoration: underline; }
 .breadcrumbs span{ color: var(--text-secondary); }
+.breadcrumbs .crumb-current{ color: var(--ink); font-weight: 700; }
+
+/* ============ INDICADOR DE NIVEL/GRADO Y CURSO ACTUAL ============
+   Chips informativos reutilizados en el encabezado de cada página
+   del módulo Profesor que ya tiene un grado en contexto, para que
+   siempre sea evidente en qué nivel/grado (y curso, cuando aplica)
+   se está trabajando. */
+.page-eyebrow{
+  display:flex;
+  align-items:center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.badge-nivel-grado{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background: var(--sand);
+  color: var(--ocean-deep);
+  font-size: var(--text-xs);
+  font-weight:700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge-curso-actual{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: var(--text-xs);
+  font-weight:700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ============ ESTADO DE CARGA EN BOTONES (subida de archivos) ============
+   Solo visual/UX: no cambia el envío del formulario (sigue siendo un
+   POST normal). Ver js/panel.js. */
+.btn-mini.is-loading,
+.btn-submit.is-loading{
+  opacity:.65;
+  cursor: wait;
+}
+
+/* Iconito de estado delante de los mensajes de éxito/error, sin tocar
+   el texto que ya arma cada página en PHP. */
+.panel-alert-success::before{ content:"✅ "; }
+.panel-alert-error::before{ content:"⚠️ "; }
 
 /* ============ TARJETAS DE MATERIAL (PCA / Unidad > Semana > Curso) ============ */
 .materiales-grid{

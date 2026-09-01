@@ -11,7 +11,7 @@ if (!isset($_SESSION["id_usuario"])) {
     exit;
 }
 
-if ($_SESSION["rol"] !== "PROFESOR") {
+if (!in_array($_SESSION["rol"], ["PROFESOR", "PROFESOR_PRIMARIA", "PROFESOR_SECUNDARIO"], true)) {
     die("Acceso no autorizado.");
 }
 
@@ -20,6 +20,7 @@ require_once "../backend/config/seguridad_csrf.php";
 require_once "../backend/config/flash.php";
 require_once "../backend/config/materiales_archivos.php";
 require_once "../backend/config/materiales_cursos.php";
+require_once "../backend/config/profesor_grados.php";
 
 // ==================================================
 // 2. DATOS DEL PROFESOR
@@ -41,6 +42,25 @@ if (!$profesor) {
 $idProfesor = (int) $profesor["id_profesor"];
 
 // ==================================================
+// 2.1 GRADO (NIVEL+GRADO) ACTUAL
+//
+// SEGURIDAD: nunca se confía en el id_nivel_grado que llega por
+// GET o POST; siempre se verifica contra las aulas realmente
+// asignadas al profesor antes de leer o escribir nada.
+// ==================================================
+
+$idNivelGrado = (int) ($_GET["id_nivel_grado"] ?? $_POST["id_nivel_grado"] ?? 0);
+$nivelGrado = profesor_verificar_grado($conexion, $idProfesor, $idNivelGrado);
+
+if (!$nivelGrado) {
+    http_response_code(403);
+    die("No tiene un aula asignada de ese nivel y grado.");
+}
+
+$etiqueta = nivel_grado_label($nivelGrado);
+$idNivelGradoSidebar = $idNivelGrado; // usado por sidebar.php
+
+// ==================================================
 // 3. ACCIONES: SUBIR/REEMPLAZAR Y ELIMINAR
 //
 // Todas las consultas de escritura llevan
@@ -57,10 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
     $accion = $_POST["accion"];
     $unidad = (int) ($_POST["unidad"] ?? 0);
 
+    $redireccion = "pca.php?id_nivel_grado=" . $idNivelGrado;
+
     if ($unidad < 1 || $unidad > MATERIALES_TOTAL_UNIDADES) {
 
         flash_set("Unidad inválida.", "error");
-        header("Location: pca.php");
+        header("Location: " . $redireccion);
         exit;
 
     }
@@ -77,9 +99,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
 
             $existente = $conexion->prepare("
                 SELECT id_material, ruta_archivo FROM profesor_pca_archivos
-                WHERE id_profesor = ? AND unidad = ?
+                WHERE id_profesor = ? AND id_nivel_grado = ? AND unidad = ?
             ");
-            $existente->execute([$idProfesor, $unidad]);
+            $existente->execute([$idProfesor, $idNivelGrado, $unidad]);
             $existente = $existente->fetch();
 
             if ($existente) {
@@ -91,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
                 $conexion->prepare("
                     UPDATE profesor_pca_archivos
                     SET nombre_archivo = ?, ruta_archivo = ?, extension = ?, tamano_bytes = ?
-                    WHERE id_material = ? AND id_profesor = ?
+                    WHERE id_material = ? AND id_profesor = ? AND id_nivel_grado = ?
                 ")->execute([
                     $archivoInfo["nombre_archivo"],
                     $archivoInfo["ruta_archivo"],
@@ -99,6 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
                     $archivoInfo["tamano_bytes"],
                     $existente["id_material"],
                     $idProfesor,
+                    $idNivelGrado,
                 ]);
 
                 flash_set("Archivo de U{$unidad} reemplazado correctamente.", "success");
@@ -107,10 +130,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
 
                 $conexion->prepare("
                     INSERT INTO profesor_pca_archivos
-                        (id_profesor, unidad, nombre_archivo, ruta_archivo, extension, tamano_bytes)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                        (id_profesor, id_nivel_grado, unidad, nombre_archivo, ruta_archivo, extension, tamano_bytes)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 ")->execute([
                     $idProfesor,
+                    $idNivelGrado,
                     $unidad,
                     $archivoInfo["nombre_archivo"],
                     $archivoInfo["ruta_archivo"],
@@ -132,9 +156,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
 
         $existente = $conexion->prepare("
             SELECT id_material, ruta_archivo FROM profesor_pca_archivos
-            WHERE id_profesor = ? AND unidad = ?
+            WHERE id_profesor = ? AND id_nivel_grado = ? AND unidad = ?
         ");
-        $existente->execute([$idProfesor, $unidad]);
+        $existente->execute([$idProfesor, $idNivelGrado, $unidad]);
         $existente = $existente->fetch();
 
         if (!$existente) {
@@ -144,8 +168,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
         } else {
 
             $conexion->prepare("
-                DELETE FROM profesor_pca_archivos WHERE id_material = ? AND id_profesor = ?
-            ")->execute([$existente["id_material"], $idProfesor]);
+                DELETE FROM profesor_pca_archivos WHERE id_material = ? AND id_profesor = ? AND id_nivel_grado = ?
+            ")->execute([$existente["id_material"], $idProfesor, $idNivelGrado]);
 
             materiales_eliminar_archivo_fisico($existente["ruta_archivo"]);
 
@@ -155,7 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
 
     }
 
-    header("Location: pca.php");
+    header("Location: " . $redireccion);
     exit;
 
 }
@@ -167,9 +191,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
 // ==================================================
 
 $stmt = $conexion->prepare("
-    SELECT * FROM profesor_pca_archivos WHERE id_profesor = ?
+    SELECT * FROM profesor_pca_archivos WHERE id_profesor = ? AND id_nivel_grado = ?
 ");
-$stmt->execute([$idProfesor]);
+$stmt->execute([$idProfesor, $idNivelGrado]);
 
 $archivosPorUnidad = [];
 foreach ($stmt->fetchAll() as $fila) {
@@ -182,7 +206,7 @@ foreach ($stmt->fetchAll() as $fila) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PCA · Panel del Profesor - I.E.P. 88044 Abraham Valdelomar</title>
+    <title>PCA · <?= htmlspecialchars($etiqueta) ?> · Panel del Profesor - I.E.P. 88044 Abraham Valdelomar</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
@@ -194,16 +218,28 @@ foreach ($stmt->fetchAll() as $fila) {
 
 <header>
     <div>
-        <h1>PCA</h1>
+        <div class="page-eyebrow">
+            <span class="badge-nivel-grado">🎒 <?= htmlspecialchars($etiqueta) ?></span>
+        </div>
+        <h1>📘 PCA</h1>
         <p>Panel del Profesor · I.E.P. 88044 Abraham Valdelomar</p>
     </div>
     <div class="header-actions">
-        <a href="dashboard.php" class="btn-secondary">← Mi panel</a>
+        <a href="grado.php?id_nivel_grado=<?= $idNivelGrado ?>" class="btn-secondary">← <?= htmlspecialchars($etiqueta) ?></a>
         <a href="../backend/auth/logout.php">Cerrar sesión</a>
     </div>
 </header>
 
 <main>
+
+    <!-- ========== MIGAS DE PAN ========== -->
+    <nav class="breadcrumbs">
+        <a href="dashboard.php">Dashboard</a>
+        <span>›</span>
+        <a href="grado.php?id_nivel_grado=<?= $idNivelGrado ?>"><?= htmlspecialchars($etiqueta) ?></a>
+        <span>›</span>
+        <span class="crumb-current">PCA</span>
+    </nav>
 
     <?php if ($mensaje): ?>
         <div class="panel-alert panel-alert-<?= $mensajeTipo ?>"><?= htmlspecialchars($mensaje) ?></div>
@@ -249,6 +285,7 @@ foreach ($stmt->fetchAll() as $fila) {
                             <?= csrf_field() ?>
                             <input type="hidden" name="accion" value="eliminar_pca">
                             <input type="hidden" name="unidad" value="<?= $u ?>">
+                            <input type="hidden" name="id_nivel_grado" value="<?= $idNivelGrado ?>">
                             <button type="submit" class="btn-mini btn-mini-reject">Eliminar</button>
                         </form>
                     </div>
@@ -259,6 +296,7 @@ foreach ($stmt->fetchAll() as $fila) {
                     <?= csrf_field() ?>
                     <input type="hidden" name="accion" value="guardar_pca">
                     <input type="hidden" name="unidad" value="<?= $u ?>">
+                    <input type="hidden" name="id_nivel_grado" value="<?= $idNivelGrado ?>">
                     <input type="file" name="archivo" required>
                     <button type="submit" class="btn-mini">
                         <?= $archivo ? "Reemplazar" : "Subir" ?>
