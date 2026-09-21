@@ -1,0 +1,4 @@
+# Credenciales reales de correo (SMTP) — nunca se suben al
+# repositorio. Ver backend/config/correo.local.php.example para
+# la plantilla que sí se sube.
+backend/config/correo.local.php
