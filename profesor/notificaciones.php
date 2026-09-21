@@ -6,15 +6,22 @@ require_once __DIR__ . "/../backend/partials/profesor_bootstrap.php";
 // NOTIFICACIONES
 // Misma lógica (listar, contar no leídas, marcar como leídas) que
 // antes vivía en dashboard.php, solo movida a su propia página.
+//
+// MEJORA: entrar a esta página YA cuenta como "leer" las
+// notificaciones (antes se necesitaba un clic extra en "Marcar
+// todas como leídas" vía ?ver_notificaciones=1, y hasta ese clic
+// la campanita del sidebar seguía marcándolas como pendientes).
+// Por eso primero se lee el estado actual (para poder mostrar en
+// ESTA carga cuáles eran nuevas, con la clase "leida" de abajo) y
+// recién después se marcan como leídas — así el contador que
+// calcula sidebar.php más abajo ya sale en 0 en esta misma visita.
 // ==================================================
 
 $notificacionesProfesor = notificaciones_listar($conexion, $_SESSION["id_usuario"], 5);
 $notificacionesNoLeidas = notificaciones_no_leidas($conexion, $_SESSION["id_usuario"]);
 
-if (isset($_GET["ver_notificaciones"])) {
+if ($notificacionesNoLeidas > 0) {
     notificaciones_marcar_leidas($conexion, $_SESSION["id_usuario"]);
-    header("Location: notificaciones.php");
-    exit;
 }
 
 $gradosAsignados = profesor_grados_asignados($conexion, $profesor["id_profesor"]);
@@ -40,8 +47,8 @@ $gradosAsignados = profesor_grados_asignados($conexion, $profesor["id_profesor"]
         Notificaciones - I.E.P. 88044 Abraham Valdelomar
     </title>
 
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
 
 </head>
 
@@ -99,10 +106,6 @@ $gradosAsignados = profesor_grados_asignados($conexion, $profesor["id_profesor"]
                 </div>
             <?php endforeach; ?>
 
-            <?php if ($notificacionesNoLeidas > 0): ?>
-                <p><a href="notificaciones.php?ver_notificaciones=1">Marcar todas como leídas</a></p>
-            <?php endif; ?>
-
         <?php endif; ?>
 
     </section>
@@ -113,7 +116,7 @@ $gradosAsignados = profesor_grados_asignados($conexion, $profesor["id_profesor"]
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
-<script src="../js/panel.js"></script>
+<script src="../js/panel.js?v=202609211901"></script>
 
 </body>
 

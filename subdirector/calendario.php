@@ -126,8 +126,13 @@ $tituloMes = ucfirst(mes_nombre_es($mes)) . " de " . $anio;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Académico · Panel del Subdirector - I.E.P. 88044 Abraham Valdelomar</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+=======
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 </head>
 <body>
 
@@ -207,9 +212,17 @@ $tituloMes = ucfirst(mes_nombre_es($mes)) . " de " . $anio;
         </div>
     </div>
 
+<<<<<<< HEAD
     <div class="cal-legend">
         <?php foreach (["EXAMEN", "REUNION", "FERIADO", "ACTIVIDAD", "OTRO"] as $t): $m = eventos_tipo_meta($t); ?>
             <span><span class="dot <?= $m["clase"] ?>"></span><?= htmlspecialchars($m["label"]) ?></span>
+=======
+    <p class="placeholder-text">Exámenes, reuniones, feriados y actividades del colegio, en un solo lugar. "Dirigido a" decide quién lo ve: todo el colegio o un grado puntual.</p>
+
+    <div class="cal-legend">
+        <?php foreach (["EXAMEN", "REUNION", "FERIADO", "ACTIVIDAD", "OTRO"] as $t): $m = eventos_tipo_meta($t); ?>
+            <span class="cal-legend-pill <?= $m["clase"] ?>"><?= htmlspecialchars($m["label"]) ?></span>
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
         <?php endforeach; ?>
     </div>
 
@@ -282,7 +295,11 @@ $tituloMes = ucfirst(mes_nombre_es($mes)) . " de " . $anio;
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
+<<<<<<< HEAD
 <script src="../js/panel.js"></script>
+=======
+<script src="../js/panel.js?v=202609211901"></script>
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 
 </body>
 </html>

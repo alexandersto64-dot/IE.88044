@@ -51,6 +51,11 @@ function icon(string $nombre, string $class = "icon"): string
         "rotate-ccw"    => '<path d="M3 3v6h6"/><path d="M3.5 13.5a8.5 8.5 0 1 0 2.6-7.8L3 9"/>',
         "hard-drive"    => '<rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M2.5 14h19"/><path d="M6 18h.01"/><path d="M10 18h.01"/>',
         "history"       => '<path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 3.5V8h4.5"/><path d="M12 7.5V12l3 2"/>',
+<<<<<<< HEAD
+=======
+        "smile"         => '<circle cx="12" cy="12" r="9.5"/><path d="M8 13.5s1.5 2 4 2 4-2 4-2"/><path d="M8.5 9.5h.01"/><path d="M15.5 9.5h.01"/>',
+        "file-plus"     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M12 12.5v6"/><path d="M9 15.5h6"/>',
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
     ];
 
     $d = $paths[$nombre] ?? $paths["file-text"];

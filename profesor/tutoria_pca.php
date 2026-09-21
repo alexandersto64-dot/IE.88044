@@ -208,8 +208,8 @@ foreach ($stmt->fetchAll() as $fila) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PCA · Tutoría · Panel del Profesor - I.E.P. 88044 Abraham Valdelomar</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
 </head>
 <body>
 
@@ -315,7 +315,7 @@ foreach ($stmt->fetchAll() as $fila) {
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
-<script src="../js/panel.js"></script>
+<script src="../js/panel.js?v=202609211901"></script>
 
 </body>
 </html>

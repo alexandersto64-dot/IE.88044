@@ -34,8 +34,13 @@ $alertaEspacio = $espacioLibre !== false && $espacioLibre < (500 * 1024 * 1024);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salud del sistema · Panel de Administración - I.E.P. 88044 Abraham Valdelomar</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+=======
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 </head>
 <body>
 
@@ -99,7 +104,11 @@ $alertaEspacio = $espacioLibre !== false && $espacioLibre < (500 * 1024 * 1024);
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
+<<<<<<< HEAD
 <script src="../js/panel.js"></script>
+=======
+<script src="../js/panel.js?v=202609211901"></script>
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 
 </body>
 </html>

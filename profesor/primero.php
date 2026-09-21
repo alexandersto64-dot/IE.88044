@@ -106,12 +106,12 @@ if (!$profesor) {
 
     <link
         rel="stylesheet"
-        href="../css/styles.css"
+        href="../css/styles.css?v=202609211855"
     >
 
     <link
         rel="stylesheet"
-        href="../css/dashboard.css"
+        href="../css/dashboard.css?v=202609211855"
     >
 
 </head>
@@ -360,7 +360,7 @@ if (!$profesor) {
 </div>
 
 
-<script src="../js/panel.js"></script>
+<script src="../js/panel.js?v=202609211901"></script>
 
 
 </body>

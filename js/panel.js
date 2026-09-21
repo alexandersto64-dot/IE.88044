@@ -209,6 +209,19 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Selector de hijo(a) del SIDEBAR (Padre con 2+ hijos vinculados):
+    // mismo criterio que el selector de grado de arriba, pero todas
+    // las páginas del módulo Padre aceptan id_alumno en su propia URL
+    // (no hay una "página de destino" fija como grado.php), así que
+    // siempre se mantiene la página actual.
+    var selectorHijoSidebar = document.getElementById("sidebarHijoSelector");
+
+    if (selectorHijoSidebar) {
+        selectorHijoSidebar.addEventListener("change", function () {
+            window.location.href = window.location.pathname + "?id_alumno=" + selectorHijoSidebar.value;
+        });
+    }
+
     // ==================================================
     // Validación de archivo en el navegador ANTES de enviar
     // (tipo/extensión y tamaño), en los formularios de subida de

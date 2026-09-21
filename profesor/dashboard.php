@@ -380,8 +380,8 @@ $notificacionesPreview = array_slice(
         Panel del Profesor - I.E.P. 88044 Abraham Valdelomar
     </title>
 
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
 
 </head>
 
@@ -977,7 +977,7 @@ $notificacionesPreview = array_slice(
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
-<script src="../js/panel.js"></script>
+<script src="../js/panel.js?v=202609211901"></script>
 
 </body>
 

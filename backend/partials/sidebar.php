@@ -43,6 +43,7 @@ $rolEtiquetas = [
     "PROFESOR"            => "Profesor",
     "PROFESOR_PRIMARIA"   => "Profesor de Primaria",
     "PROFESOR_SECUNDARIO" => "Profesor de Secundaria",
+    "PADRE"               => "Padre de familia",
 ];
 $rolEtiqueta = $rolEtiquetas[$rolActual] ?? "Panel";
 
@@ -60,12 +61,19 @@ if (isset($conexion) && isset($_SESSION["id_usuario"])) {
 
 // Página a la que debe apuntar el contador: solo enlazamos a una
 // vista que realmente exista y liste las notificaciones del rol.
-// Profesor y Subdirector ya tienen su propia página
-// (profesor/notificaciones.php y subdirector/notificaciones.php).
-// ADMIN todavía no recibe notificaciones (nada en
-// backend/config/notificaciones.php le genera avisos), así que su
-// contador se queda sin enlace para no inventar una página vacía.
-$notifHref = ($esRolProfesor || $rolActual === "SUBDIRECTOR") ? "notificaciones.php" : null;
+// Profesor, Subdirector y Administrador ya tienen su propia página
+// (profesor/notificaciones.php, subdirector/notificaciones.php y
+// admin/notificaciones.php — este último recibe el mismo aviso de
+// "módulo completado" que ya recibía Subdirección, ver
+// notificaciones_verificar_modulo_completo).
+$notifHref = ($esRolProfesor || $rolActual === "SUBDIRECTOR" || $rolActual === "ADMIN") ? "notificaciones.php" : null;
+
+// Sufijo para conservar el hijo seleccionado al navegar entre las
+// páginas del módulo Padre (mismo mecanismo que $sufijoGrado, pero
+// con id_alumno). $idAlumnoActivo lo define padre_bootstrap.php.
+$sufijoHijo = isset($idAlumnoActivo) && (int) $idAlumnoActivo > 0
+    ? "?id_alumno=" . (int) $idAlumnoActivo
+    : null;
 
 // PCA/Unidades/Sesiones/Documentos ahora son por nivel+grado: si la
 // página que incluye este sidebar ya tiene un grado en contexto
@@ -94,6 +102,7 @@ $menus = [
                 ["label" => "Cursos", "icon" => "book", "href" => "cursos.php"],
                 ["label" => "Documentos", "icon" => "file-text", "href" => "documentos.php"],
                 ["label" => "Reportes", "icon" => "bar-chart", "href" => "reportes.php"],
+                ["label" => "Notificaciones", "icon" => "bell", "href" => "notificaciones.php"],
                 ["label" => "Configuración", "icon" => "settings", "href" => "configuracion.php"],
             ],
             "Sistema" => [
@@ -154,6 +163,22 @@ $menus = [
         ],
     ],
 
+    "PADRE" => [
+        "titulo" => "Padre de familia",
+        "grupos" => [
+            "Principal" => [
+                ["label" => "Dashboard", "icon" => "home", "href" => "dashboard.php" . ($sufijoHijo ?? "")],
+            ],
+            "Seguimiento" => [
+                ["label" => "Boleta de notas", "icon" => "clipboard", "href" => "notas.php" . ($sufijoHijo ?? "")],
+                ["label" => "Comportamiento", "icon" => "smile", "href" => "comportamiento.php" . ($sufijoHijo ?? "")],
+            ],
+            "Trámites" => [
+                ["label" => "Preinscripción de matrícula", "icon" => "file-plus", "href" => "preinscripcion.php"],
+            ],
+        ],
+    ],
+
 ];
 
 // Si el menú es el de Profesor y todavía no hay un grado en
@@ -192,6 +217,16 @@ if (isset($profesor["nombres"])) {
     $nombreCompletoSidebar = trim($profesor["nombres"] . " " . ($profesor["apellidos"] ?? ""));
     $iniciales = mb_strtoupper(mb_substr($profesor["nombres"], 0, 1))
         . mb_strtoupper(mb_substr($profesor["apellidos"] ?? "", 0, 1));
+    if ($iniciales !== "") {
+        $inicialesSidebar = $iniciales;
+    }
+} elseif ($rolActual === "PADRE" && isset($_SESSION["nombres"])) {
+    // El módulo Padre no tiene tabla propia (ver migracion_portal_padres.sql:
+    // usa directamente usuarios, igual que Subdirector/Admin), así que su
+    // identidad sale de la sesión en vez de una consulta como $profesor.
+    $nombreCompletoSidebar = trim($_SESSION["nombres"] . " " . ($_SESSION["apellidos"] ?? ""));
+    $iniciales = mb_strtoupper(mb_substr($_SESSION["nombres"], 0, 1))
+        . mb_strtoupper(mb_substr($_SESSION["apellidos"] ?? "", 0, 1));
     if ($iniciales !== "") {
         $inicialesSidebar = $iniciales;
     }
@@ -247,6 +282,14 @@ if ($esRolProfesor && isset($conexion) && !empty($idProfesorSidebar)) {
     $tutoriaSidebar = profesor_tutoria_actual($conexion, $idProfesorSidebar);
 
 }
+
+// ------------------------------------------------------------
+// Selector de hijo (solo Padre, cuando tiene 2+ hijos vinculados).
+// Reaprovecha $hijos si la página que incluye el sidebar ya lo
+// calculó (todas las páginas del módulo Padre lo hacen en
+// padre_bootstrap.php) — no se agrega ninguna consulta nueva.
+// ------------------------------------------------------------
+$hijosSidebar = ($rolActual === "PADRE" && isset($hijos) && is_array($hijos)) ? $hijos : [];
 
 // Páginas que ya trabajan "dentro" de un grado: al cambiar el grado
 // en el selector, JS reemplaza el id_nivel_grado manteniendo la
@@ -331,6 +374,28 @@ if ($tutoriaSidebar && isset($menu["grupos"])) {
         <div class="sidebar-context sidebar-label" title="Grado actual">
             <span class="nav-icon"><?= icon("backpack") ?></span>
             <span><?= htmlspecialchars($etiqueta) ?></span>
+        </div>
+    <?php endif; ?>
+
+    <?php if (count($hijosSidebar) === 1): $hijoUnico = $hijosSidebar[0]; ?>
+        <div class="sidebar-context sidebar-label" title="Hijo(a)">
+            <span class="nav-icon"><?= icon("smile") ?></span>
+            <span><?= htmlspecialchars(trim($hijoUnico["nombres"] . " " . $hijoUnico["apellidos"])) ?></span>
+        </div>
+    <?php elseif (count($hijosSidebar) > 1): ?>
+        <div class="sidebar-context sidebar-context-select sidebar-label">
+            <span class="nav-icon"><?= icon("smile") ?></span>
+            <select
+                id="sidebarHijoSelector"
+                aria-label="Cambiar de hijo(a)"
+            >
+                <?php foreach ($hijosSidebar as $h): ?>
+                    <option
+                        value="<?= (int) $h["id_alumno"] ?>"
+                        <?= isset($idAlumnoActivo) && (int) $idAlumnoActivo === (int) $h["id_alumno"] ? "selected" : "" ?>
+                    ><?= htmlspecialchars(trim($h["nombres"] . " " . $h["apellidos"])) ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
     <?php endif; ?>
 

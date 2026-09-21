@@ -7,7 +7,7 @@ if (!isset($_SESSION["id_usuario"])) {
     exit;
 }
 
-if ($_SESSION["rol"] !== "SUBDIRECTOR") {
+if ($_SESSION["rol"] !== "ADMIN") {
     die("Acceso no autorizado.");
 }
 
@@ -15,25 +15,25 @@ require_once "../backend/config/database.php";
 require_once "../backend/config/notificaciones.php";
 
 // ==================================================
-// NOTIFICACIONES DE SUBDIRECCIÓN
-// Misma lógica (listar, contar no leídas, marcar como leídas) que
-// ya usa profesor/notificaciones.php, reutilizando las mismas
-// funciones de backend/config/notificaciones.php — no se agrega
-// ninguna tabla ni consulta nueva, solo esta vista para el rol
-// SUBDIRECTOR, que hasta ahora solo veía el contador en el sidebar
-// sin poder abrir el listado (ver notificaciones_verificar_modulo_completo
-// en backend/config/notificaciones.php, que ya le genera avisos).
+// NOTIFICACIONES DE ADMINISTRADOR
+// Mismo patrón (listar, contar no leídas, marcar como leídas al
+// entrar) que ya usan profesor/notificaciones.php y
+// subdirector/notificaciones.php, reutilizando las mismas funciones
+// de backend/config/notificaciones.php — no se agrega ninguna tabla
+// ni consulta nueva. Administrador ahora recibe el mismo aviso que
+// Subdirección cuando un profesor completa el 100% de un módulo
+// (ver notificaciones_verificar_modulo_completo en
+// backend/config/notificaciones.php), antes solo veía el contador
+// en el sidebar sin poder abrir el listado (y ese contador nunca
+// bajaba porque nada le generaba avisos todavía).
 //
-// MEJORA: igual que en profesor/notificaciones.php, entrar a esta
-// página ya marca las notificaciones como leídas automáticamente
-// (antes hacía falta un clic extra en "Marcar todas como leídas"
-// y hasta entonces la campanita del sidebar las seguía contando
-// como pendientes). Se lee el estado actual primero para poder
-// mostrar en esta misma carga cuáles eran nuevas, y recién después
-// se marcan como leídas.
+// Se lee el estado actual primero para poder mostrar en esta misma
+// carga cuáles eran nuevas, y recién después se marcan como leídas
+// — así la campanita del sidebar (más abajo) ya sale en 0 en esta
+// misma visita.
 // ==================================================
 
-$notificacionesSubdireccion = notificaciones_listar($conexion, (int) $_SESSION["id_usuario"], 20);
+$notificacionesAdmin = notificaciones_listar($conexion, (int) $_SESSION["id_usuario"], 20);
 $notificacionesNoLeidas = notificaciones_no_leidas($conexion, (int) $_SESSION["id_usuario"]);
 
 if ($notificacionesNoLeidas > 0) {
@@ -47,7 +47,7 @@ if ($notificacionesNoLeidas > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notificaciones · Panel del Subdirector - I.E.P. 88044 Abraham Valdelomar</title>
+    <title>Notificaciones · Panel del Administrador - I.E.P. 88044 Abraham Valdelomar</title>
     <link rel="stylesheet" href="../css/styles.css?v=202609211855">
     <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
 </head>
@@ -61,7 +61,7 @@ if ($notificacionesNoLeidas > 0) {
 <header>
     <div>
         <h1>Notificaciones</h1>
-        <p>Panel del Subdirector · I.E.P. 88044 Abraham Valdelomar</p>
+        <p>Panel del Administrador · I.E.P. 88044 Abraham Valdelomar</p>
     </div>
     <div class="header-actions">
         <a href="../backend/auth/logout.php">Cerrar sesión</a>
@@ -82,13 +82,13 @@ if ($notificacionesNoLeidas > 0) {
             </h2>
         </div>
 
-        <?php if (count($notificacionesSubdireccion) === 0): ?>
+        <?php if (count($notificacionesAdmin) === 0): ?>
 
             <p class="placeholder-text">No hay notificaciones todavía.</p>
 
         <?php else: ?>
 
-            <?php foreach ($notificacionesSubdireccion as $n): ?>
+            <?php foreach ($notificacionesAdmin as $n): ?>
                 <div class="notif-item <?= $n["leido"] ? "leida" : "" ?>">
                     <?php if (!empty($n["url"])): ?>
                         <a href="<?= htmlspecialchars($n["url"]) ?>"><?= htmlspecialchars($n["mensaje"]) ?></a>

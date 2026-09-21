@@ -55,8 +55,13 @@ $eventosPorDia = eventos_agrupar_por_dia($eventos);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario · Panel del Profesor - I.E.P. 88044 Abraham Valdelomar</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+=======
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 </head>
 <body>
 
@@ -89,9 +94,17 @@ $eventosPorDia = eventos_agrupar_por_dia($eventos);
         </div>
     </div>
 
+<<<<<<< HEAD
     <div class="cal-legend">
         <?php foreach (["EXAMEN", "REUNION", "FERIADO", "ACTIVIDAD", "ENTREGA", "OTRO"] as $t): $m = eventos_tipo_meta($t); ?>
             <span><span class="dot <?= $m["clase"] ?>"></span><?= htmlspecialchars($m["label"]) ?></span>
+=======
+    <p class="placeholder-text">Exámenes, reuniones, feriados y actividades del colegio para tu(s) grado(s), más tus propias fechas de entrega de Trabajos.</p>
+
+    <div class="cal-legend">
+        <?php foreach (["EXAMEN", "REUNION", "FERIADO", "ACTIVIDAD", "ENTREGA", "OTRO"] as $t): $m = eventos_tipo_meta($t); ?>
+            <span class="cal-legend-pill <?= $m["clase"] ?>"><?= htmlspecialchars($m["label"]) ?></span>
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
         <?php endforeach; ?>
     </div>
 
@@ -159,7 +172,11 @@ $eventosPorDia = eventos_agrupar_por_dia($eventos);
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
+<<<<<<< HEAD
 <script src="../js/panel.js"></script>
+=======
+<script src="../js/panel.js?v=202609211901"></script>
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 
 </body>
 </html>

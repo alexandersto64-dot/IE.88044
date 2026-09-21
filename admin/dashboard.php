@@ -240,8 +240,8 @@ $actividadEtiquetasAccion = [
         Administrador - I.E.P. 88044 Abraham Valdelomar
     </title>
 
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
 
 </head>
 
@@ -508,9 +508,33 @@ $actividadEtiquetasAccion = [
         </div>
 
         <div class="card">
+            <h3><?= icon("calendar") ?> Calendario académico</h3>
+            <p>Exámenes, reuniones, feriados y actividades del colegio.</p>
+            <a href="calendario.php">Ver calendario</a>
+        </div>
+
+        <div class="card">
             <h3><?= icon("settings") ?> Configuración</h3>
             <p>Configurar opciones del sistema.</p>
             <a href="configuracion.php">Configuración</a>
+        </div>
+
+        <div class="card">
+            <h3><?= icon("trash") ?> Papelera</h3>
+            <p>Restaurar usuarios, alumnos o cursos eliminados.</p>
+            <a href="papelera.php">Ver papelera</a>
+        </div>
+
+        <div class="card">
+            <h3><?= icon("history") ?> Auditoría</h3>
+            <p>Ver el registro de acciones administrativas.</p>
+            <a href="auditoria.php">Ver auditoría</a>
+        </div>
+
+        <div class="card">
+            <h3><?= icon("hard-drive") ?> Salud del sistema</h3>
+            <p>Espacio en disco, archivos subidos y registros de la base de datos.</p>
+            <a href="salud.php">Ver salud del sistema</a>
         </div>
 
     </div>
@@ -521,7 +545,7 @@ $actividadEtiquetasAccion = [
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
-<script src="../js/panel.js"></script>
+<script src="../js/panel.js?v=202609211901"></script>
 
 </body>
 

@@ -1080,6 +1080,23 @@ main > section > p:only-child{
 .status-corregido{ background:#dbeafe; color:#1e40af; }
 .status-aprobado{ background:#dcfce7; color:#15803d; }
 
+/* Módulo Padre: tipo de comportamiento (comportamiento.php + adelanto
+   del Dashboard) y calificación literal (boleta de Primaria, notas.php).
+   Reutilizan la misma base .status-badge, solo colores nuevos. */
+.status-positivo{ background:#dcfce7; color:#15803d; }
+.status-negativo{ background:#fee2e2; color:#b91c1c; }
+.status-neutro{ background:#e2e8f0; color:#475569; }
+.status-nota-ad{ background:#dcfce7; color:#15803d; }
+.status-nota-a{ background:#e0edff; color:#1d4ed8; }
+.status-nota-b{ background:#fef9c3; color:#854d0e; }
+.status-nota-c{ background:#fee2e2; color:#b91c1c; }
+
+/* Filtro simple de una sola línea (selector de periodo en
+   padre/notas.php) — un <select> que se auto-envía al cambiar. */
+.filtro-inline{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+.filtro-inline label{ font-size: var(--text-sm); font-weight:600; color: var(--text-secondary); }
+.filtro-inline select{ padding:6px 10px; border-radius:8px; border:1px solid var(--border-color, #d9dee3); font-size: var(--text-sm); background: var(--white); }
+
 /* Tarjeta de notificación no leída */
 .notif-item{ padding:10px 14px; border-left:3px solid var(--ocean-mid); background:#f7faff; border-radius: var(--radius-sm); margin-bottom:8px; font-size: var(--text-sm); }
 .notif-item.leida{ border-left-color:#d7dee6; background:transparent; opacity:.75; }
@@ -1700,6 +1717,7 @@ a.comparativa-grado-fila:hover{
 }
 .cal-today-btn:hover{ background: var(--sand); }
 
+<<<<<<< HEAD
 .cal-legend{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px; }
 .cal-legend span{
   display:flex;
@@ -1710,6 +1728,18 @@ a.comparativa-grado-fila:hover{
   font-weight:600;
 }
 .cal-legend .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+=======
+.cal-legend{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.cal-legend-pill{
+  display:inline-flex;
+  align-items:center;
+  font-size:11px;
+  font-weight:700;
+  color: var(--white);
+  padding:4px 11px;
+  border-radius:999px;
+}
+>>>>>>> 00cd8f9 (Actualización del sitio web 9.1)
 
 .cal-grid{
   display:grid;

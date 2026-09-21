@@ -186,8 +186,8 @@ $ultimosPendientes = dashboard_cache("subdirector_ultimos_pendientes", DASHBOARD
         Subdirector - I.E.P. 88044 Abraham Valdelomar
     </title>
 
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/styles.css?v=202609211855">
+    <link rel="stylesheet" href="../css/dashboard.css?v=202609211855">
 
 </head>
 
@@ -392,13 +392,16 @@ $ultimosPendientes = dashboard_cache("subdirector_ultimos_pendientes", DASHBOARD
         </div>
 
         <div class="card">
+            <h3><?= icon("calendar") ?> Calendario académico</h3>
+            <p>Exámenes, reuniones, feriados y actividades del colegio.</p>
+            <a href="calendario.php">Ver calendario</a>
+        </div>
+
+        <div class="card">
             <h3><?= icon("calendar") ?> Periodos académicos</h3>
             <p>Consultar los periodos académicos registrados.</p>
             <a href="periodos.php">Ver periodos</a>
         </div>
-
-        </div>
-
 
     </div>
 
@@ -408,7 +411,7 @@ $ultimosPendientes = dashboard_cache("subdirector_ultimos_pendientes", DASHBOARD
 </div><!-- /.app-content -->
 </div><!-- /.app-shell -->
 
-<script src="../js/panel.js"></script>
+<script src="../js/panel.js?v=202609211901"></script>
 
 </body>
 

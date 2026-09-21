@@ -211,6 +211,26 @@ switch (strtoupper(trim($usuario["rol"]))) {
         exit;
 
 
+    case "PADRE":
+
+        header(
+            "Location: ../../padre/dashboard.php"
+        );
+
+        exit;
+
+
+    case "AUXILIAR":
+
+        // El módulo de Auxiliar (Fase 2) todavía no tiene páginas
+        // propias — se deja este caso explícito para no caer en el
+        // "default" (que destruiría la sesión y hablaría de un "rol
+        // no válido" siendo en realidad un rol válido, solo que su
+        // panel aún no está construido).
+        session_destroy();
+        volverConError("El panel de Auxiliar todavía no está disponible.");
+
+
     default:
 
         session_destroy();

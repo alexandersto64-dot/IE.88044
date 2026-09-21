@@ -225,21 +225,6 @@ function notificaciones_verificar_modulo_completo(PDO $conexion, int $idProfesor
         return;
     }
 
-    // Clave del evento (profesor + grado + módulo) codificada en la
-    // url: es lo que impide notificar el mismo evento dos veces.
-    $url = "../subdirector/reportes.php?id_profesor={$idProfesor}&id_nivel_grado={$idNivelGrado}&modulo={$modulo}";
-
-    $yaExiste = $conexion->prepare("
-        SELECT id_notificacion FROM notificaciones
-        WHERE tipo = 'MODULO_COMPLETADO' AND url = ?
-        LIMIT 1
-    ");
-    $yaExiste->execute([$url]);
-
-    if ($yaExiste->fetch()) {
-        return; // este profesor+grado+módulo ya fue notificado antes
-    }
-
     $stmtProfesor = $conexion->prepare("
         SELECT u.nombres, u.apellidos FROM usuarios u
         INNER JOIN profesores p ON p.id_usuario = u.id_usuario
@@ -262,14 +247,43 @@ function notificaciones_verificar_modulo_completo(PDO $conexion, int $idProfesor
     $mensaje = trim($datosProfesor["nombres"] . " " . $datosProfesor["apellidos"])
         . " completó el 100% de " . $nombreModulo . " en " . nivel_grado_label($nivelGrado) . ".";
 
-    $subdirectores = $conexion->query("
-        SELECT u.id_usuario FROM usuarios u
-        INNER JOIN roles r ON r.id_rol = u.id_rol
-        WHERE r.nombre = 'SUBDIRECTOR' AND u.estado = 'ACTIVO'
-    ")->fetchAll();
+    // Este aviso llega a Subdirección Y a Administrador. Cada rol
+    // tiene su propia página de reportes (subdirector/reportes.php
+    // y admin/reportes.php), así que la url -y con ella la clave que
+    // evita duplicados, "profesor+grado+módulo+rol"- se arma por
+    // separado para cada uno: notificar a un rol nunca bloquea que
+    // se notifique al otro, y cada quien recibe un enlace que sí
+    // puede abrir (un ADMIN no tiene acceso a subdirector/reportes.php
+    // y viceversa).
+    $destinatariosPorRol = [
+        "SUBDIRECTOR" => "../subdirector/reportes.php?id_profesor={$idProfesor}&id_nivel_grado={$idNivelGrado}&modulo={$modulo}",
+        "ADMIN"       => "../admin/reportes.php?id_profesor={$idProfesor}&id_nivel_grado={$idNivelGrado}&modulo={$modulo}",
+    ];
 
-    foreach ($subdirectores as $fila) {
-        notificar_crear($conexion, (int) $fila["id_usuario"], "MODULO_COMPLETADO", $mensaje, $url);
+    foreach ($destinatariosPorRol as $rol => $url) {
+
+        $yaExiste = $conexion->prepare("
+            SELECT id_notificacion FROM notificaciones
+            WHERE tipo = 'MODULO_COMPLETADO' AND url = ?
+            LIMIT 1
+        ");
+        $yaExiste->execute([$url]);
+
+        if ($yaExiste->fetch()) {
+            continue; // este profesor+grado+módulo ya fue notificado a este rol
+        }
+
+        $usuariosDelRol = $conexion->prepare("
+            SELECT u.id_usuario FROM usuarios u
+            INNER JOIN roles r ON r.id_rol = u.id_rol
+            WHERE r.nombre = ? AND u.estado = 'ACTIVO'
+        ");
+        $usuariosDelRol->execute([$rol]);
+
+        foreach ($usuariosDelRol->fetchAll() as $fila) {
+            notificar_crear($conexion, (int) $fila["id_usuario"], "MODULO_COMPLETADO", $mensaje, $url);
+        }
+
     }
 
 }
